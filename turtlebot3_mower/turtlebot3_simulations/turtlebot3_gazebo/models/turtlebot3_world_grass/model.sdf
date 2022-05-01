@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<sdf version='1.5'>
+
+  <!-- House -->
+  <!-- <model name='House'>
+    <static>1</static>
+    <link name='link'>
+      <collision name='collision'>
+        <geometry>
+          <mesh>
+            <uri>model://house_1/meshes/house_1.dae</uri>
+            <scale>1 1 1</scale>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='visual'>
+        <geometry>
+          <mesh>
+            <uri>model://house_1/meshes/house_1.dae</uri>
+            <scale>1 1 1</scale>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <uri>model://house_1/materials/scripts</uri>
+            <uri>model://house_1/materials/textures</uri>
+            <name>House_1/Diffuse</name>
+          </script>
+          <shader type='normal_map_tangent_space'>
+            <normal_map>House_1_Normal.png</normal_map>
+          </shader>
+        </material>
+      </visual>
+    </link>
+  </model> -->
+
+  <include>
+    <pose>10 0 0 0 0 0</pose>
+    <scale>1 1 1</scale>
+    <uri>model://house_2</uri>
+  </include>
+
+</sdf>

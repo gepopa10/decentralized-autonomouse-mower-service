@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<launch>
+  <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
+  <arg name="robot" default="turtlebot3"/>
+  <arg name="x_pos" default="2.46"/>
+  <arg name="y_pos" default="-10.47"/>
+  <arg name="z_pos" default="0.0"/>
+  <arg name="roll" default="0"/>
+  <arg name="pitch" default="0"/>
+  <arg name="yaw" default="0"/>
+  <arg name="position_noise" default="0"/>
+  <arg name="theta_noise" default="0"/>
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find turtlebot3_gazebo)/worlds/backyard_world_house_fence_uwb.world"/>
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="true"/>
+    <arg name="headless" value="false"/>
+    <arg name="debug" value="false"/>
+  </include>
+
+  <param name="robot_description" command="$(find xacro)/xacro --inorder $(find turtlebot3_description)/urdf/turtlebot3_$(arg model)_bigger.urdf.xacro" />
+
+  <node pkg="gazebo_ros" type="spawn_model" name="spawn_urdf"  args="-urdf -model turtlebot3_$(arg model) -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -R $(arg roll) -P $(arg pitch) -Y $(arg yaw) -param robot_description" />
+
+  <arg name="odometry_topic" default="/mobile_base_controller/fake_odom"/>
+  <arg name="controller_odometry_topic" default="/mobile_base_controller/noisy_odom"/>
+  <arg name="cmd_vel_topic" default="/mobile_base_controller/cmd_vel"/>
+
+  <!-- Low-level controller -->
+  <include file="$(find rover_hardware_interface)/launch/rover_controller.launch">
+    <arg name="simulation" default="true" />
+    <arg name="joint_state_topic" default="gazebo_rover/wheel_speed_read" />
+  </include>
+
+  <param name="robot_name" type="string" value="$(arg robot)" />
+  <param name="robot_model_name" type="string" value="$(arg model)" />
+
+  <!-- Fake Odometry from_joints_or_cmdvel-->
+  <!-- <include file="$(find fake_odom_from_joints_or_cmdvel)/launch/fake_odometry.launch">
+    <arg name="odometry_topic" default="$(arg odometry_topic)" />
+    <arg name="cmd_vel_topic" default="$(arg cmd_vel_topic)" />
+    <arg name="joints_topic" default="/gazebo_rover/wheel_speed_read" />
+  </include> -->
+
+  <!-- Fake Odometry from_model_state-->
+  <include file="$(find fake_odom_from_model)/launch/fake_odometry.launch">
+    <arg name="link_topic" default="/gazebo/link_states" />
+    <arg name="odometry_topic" default="$(arg odometry_topic)" />
+  </include>
+
+  <!-- Add Gaussain noise to the odometry topic -->
+  <include file="$(find gaussian_noise)/launch/gaussian_noise_odom.launch">
+    <arg name="odometry_topic" default="$(arg odometry_topic)" />
+  	<arg name="noisy_odometry_topic" default="$(arg controller_odometry_topic)" />
+    <arg name="position_noise" default="$(arg position_noise)" />
+    <arg name="theta_noise" default="$(arg theta_noise)" />
+  </include>
+
+  <!-- High-level controller -->
+  <include file="$(find high_level_controller)/launch/path.launch">
+    <arg name="odometry_topic" default="$(arg controller_odometry_topic)" />
+    <arg name="cmd_vel_topic" default="$(arg cmd_vel_topic)" />
+  </include>
+
+  <!-- Path planner -->
+  <include file="$(find path_planner_from_points)/launch/path_planner_from_points.launch">
+    <arg name="input_path_topic" default="/move_base_simple/path_raw" />
+  	<arg name="output_path_topic" default="/move_base_simple/path" />
+  </include>
+
+  <!-- publish a path from an input txt file service -->
+  <node pkg="boustrophedon_optimal_path_planner" type="publish_raw_path_from_fullpath_meters.py" name="publish_raw_path_from_fullpath_meters.py" output="screen"/>
+
+</launch>

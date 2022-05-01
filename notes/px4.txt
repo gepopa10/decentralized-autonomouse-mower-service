@@ -1,0 +1,181 @@
+# to run mavlink console
+cd ethzasl_mav_px4
+./Tools/mavlink_shell.py /dev/ttyACM0
+# do roslaunch mavros px4.launch before if not working
+
+# in nsh console
+# https://dev.px4.io/v1.9.0/en/middleware/modules_command.html
+pwm rate -a -r 500
+pwm info
+pwm arm
+pwm max -c 12345678 -p 2000
+pwm min -c 12345678 -p 1
+pwm disarmed -c 12345678 -p 1
+
+pwm test -c 1234 -p 1
+
+rosservice call /mavros/cmd/command "{command: 183, param1: 3.0, param2: 1500.0}"
+
+To flash:
+cd ethzasl_mav_px4
+make clean
+make px4fmu-v5_default
+make px4fmu-v5_default upload
+
+# if not a git repository: make submodulesclean
+# if src/drivers/px4io/CMakeFiles/px4io_firmware.dir/build.make:110: recipe for target 'external/Stamp px4io_firmware/px4io_firmware-build' failed: Can you try ninja? sudo apt-get install ninja-build Then make distclean
+
+
+rosservice call /mavros/cmd/arming "value: true"
+rostopic echo /mavros/state
+
+# set CBRK_USB_CHK param to 197848 to arm with usb connected
+# do airplane setup in qgc to be able to arm
+# set COM_RC_IN_MODE to No RC checks to remove rc setup
+# for check battery error when arming: CBRK_SUPPLY_CHK
+# for faisable enabled: No manual control stick input px4, in safety disable RC Loss Failsafe Trigger
+# for arming denied press safety switch first: CBRK_IO_SAFETY
+
+rostopic pub -r 100 /mavros/rc/override mavros_msgs/OverrideRCIn "channels: [0.0, 0.2, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]"
+
+rostopic pub -r 100 /mavros/actuator_control mavros_msgs/ActuatorControl "header:
+  seq: 0
+  stamp: now
+  frame_id: '0'
+group_mix: 0
+controls: [0, 0.2, 0, 0, 0, 0, 0, 0]" -s
+
+To change mode, but before actuator_control has to be published:
+rosservice call /mavros/set_mode "base_mode: 0               
+custom_mode: 'OFFBOARD'" 
+
+rostopic echo /mavros/target_actuator_control
+
+mixer load /dev/pwm_output0 /etc/mixers/high_diff_rover.main.mix
+# change in Firmware/src/modules/sensors/pwm_params_main.c @min 800 for PARAM_DEFINE_INT32(PWM_MIN, 1000);
+# change rate in rc.rover_defaults
+
+To flash:
+cd Firmware
+make clean
+make px4_fmu-v5_default
+make px4_fmu-v5_default upload
+
+############################################################################
+############################################################################
+MAVLINK console
+See infos:
+dmesg
+
+To listen to the content of one topic for 5 messages, run the listener:
+listener actuator_armed 5
+
+This command shows the publishing frequency of each topic in real-time:
+uorb top
+############################################################################
+############################################################################
+
+
+For px4 firmware to properly work in gitlab:
+1) Create a gitlab repository
+git remote rename origin old-origin
+git remote add origin git@gitlab.humanitas.mtl:robotics/rover/navigation/test2.git
+git push -u origin --all
+git push -u origin --tags
+git push origin master
+
+Then we can make change:
+git add .
+git commit -a -m "readme"
+git push origin master
+
+############################################################################
+############################################################################
+SITL
+ressources:
+https://dev.px4.io/v1.9.0/en/simulation/gazebo.html
+https://dev.px4.io/v1.9.0/en/simulation/
+https://github.com/px4/sitl_gazebo
+https://dev.px4.io/master/en/simulation/ros_interface.html
+https://risc.readthedocs.io/1-z-gazebo-simulation.html
+
+------------------------------------------------------
+Before we can run in PX4 Firmware
+***** Should not be necessary since all this is in Tools/sitl_gazebo *******
+# For SITL with gazebo
+# Set the plugin path so Gazebo finds our model and sim
+export GAZEBO_PLUGIN_PATH=${GAZEBO_PLUGIN_PATH}:$HOME/SITL/src/sitl_gazebo/build
+# Set the model path so Gazebo finds the airframes
+export GAZEBO_MODEL_PATH=${GAZEBO_MODEL_PATH}:$HOME/SITL/src/sitl_gazebo/models
+# Disable online model lookup since this is quite experimental and unstable
+export GAZEBO_MODEL_DATABASE_URI=""
+# Set path to sitl_gazebo repository
+export SITL_GAZEBO_PATH=$HOME/SITL/src/sitl_gazebo
+
+export GAZEBO_PLUGIN_PATH=${GAZEBO_PLUGIN_PATH}:$(pwd)/Tools/sitl_gazebo/build
+export GAZEBO_MODEL_PATH=${GAZEBO_MODEL_PATH}:$(pwd)/Tools/sitl_gazebo/models
+export GAZEBO_MODEL_DATABASE_URI=""
+export SITL_GAZEBO_PATH=$(pwd)/Tools/sitl_gazebo
+****************************************************************************
+
+make px4_sitl gazebo_rover
+sitl_gazebo needs to be installed
+
+Launch mavros SITL connecting with localhost:
+roslaunch mavros px4.launch fcu_url:="udp://:14540@127.0.0.1:14557"
+------------------------------------------------------
+Rover simulation:
+Following https://risc.readthedocs.io/1-z-gazebo-simulation.html:
+
+DONT_RUN=1 make px4_sitl_default gazebo
+source Tools/setup_gazebo.bash $(pwd) $(pwd)/build/px4_sitl_default
+export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:$(pwd)
+export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:$(pwd)/Tools/sitl_gazebo
+roslaunch px4 mavros_posix_sitl.launch vehicle:="r1_rover"
+Wait some time before launching the script:
+python ~/sitl_ws/src/mypackage/scripts/square.py
+------------------------------------------------------
+Current rover listens to cmd_vel and can follow a y velocity for example:
+rostopic pub -r100 /mavros/setpoint_velocity/cmd_vel geometry_msgs/TwistStamped "header:
+  seq: 0
+  stamp:
+    secs: 0
+    nsecs: 0
+  frame_id: ''
+twist:
+  linear:
+    x: 0.0
+    y: 3.0
+    z: 0.0
+  angular:
+    x: 0.0
+    y: 0.0
+    z: 0.0"
+
+rostopic pub -r100 /mavros/setpoint_velocity/cmd_vel geometry_msgs/TwistStamped "header:
+  seq: 0
+  stamp:
+    secs: 0
+    nsecs: 0
+  frame_id: ''
+twist:
+  linear:
+    x: 0.1
+    y: 0.0
+    z: 0.0
+  angular:
+    x: 0.0
+    y: 0.0
+    z: 0.0"
+
+rostopic pub -r 100 /mavros/rc/override mavros_msgs/OverrideRCIn "channels: [0.2, 0.2, 0.2, 0.2, 0.0, 0.0, 0.0, 0.0]"
+
+rosservice call /mavros/set_mode "base_mode: 0               
+custom_mode: 'OFFBOARD'" 
+
+rosservice call /mavros/cmd/arming "value: true"
+
+roslaunch px4 mavros_posix_sitl_turtlebot3.launch
+
+if accel uncalibrated try:
+rm ~/.ros/eeprom/parameters*

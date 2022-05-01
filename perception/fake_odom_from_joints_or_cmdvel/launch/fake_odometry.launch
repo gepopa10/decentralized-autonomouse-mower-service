@@ -1,0 +1,11 @@
+<launch>
+	<arg name="odometry_topic" default="/mobile_base_controller/odom_fake" />
+	<arg name="joints_topic" default="/gazebo_rover/wheel_speed_read" />
+	<arg name="cmd_vel_topic" default="/mobile_base_controller/cmd_vel" />
+
+	<node name="fake_odom_from_joints_or_cmdvel" pkg="fake_odom_from_joints_or_cmdvel" type="fake_odometry_node" output="screen">
+    <remap from="/odom" to="$(arg odometry_topic)"/>
+		<remap from="/cmd_vel" to="$(arg cmd_vel_topic)"/>
+    <remap from="/gazebo_rover/wheel_speed_read" to="$(arg joints_topic)"/>
+  </node>
+</launch>

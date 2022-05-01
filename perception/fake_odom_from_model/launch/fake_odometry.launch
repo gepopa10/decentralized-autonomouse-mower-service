@@ -1,0 +1,15 @@
+<launch>
+	<arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
+	<arg name="robot" default="turtlebot3"/>
+
+	<param name="robot_name" type="string" value="$(arg robot)" />
+  <param name="robot_model_name" type="string" value="$(arg model)" />
+
+	<arg name="link_topic" default="/gazebo/link_states" />
+	<arg name="odometry_topic" default="/mobile_base_controller/fake_odom" />
+
+	<node name="fake_odom_from_model" pkg="fake_odom_from_model" type="fake_odometry_from_model_state.py" output="screen">
+    <remap from="/gazebo/link_states" to="$(arg link_topic)"/>
+		<remap from="/move_base_simple/fake_odom" to="$(arg odometry_topic)"/>
+  </node>
+</launch>

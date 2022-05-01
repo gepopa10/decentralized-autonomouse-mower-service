@@ -1,0 +1,4 @@
+<launch>
+  <param name="string"  value="mystring" />
+  <test test-name="test_motor_speed" pkg="rover_hardware_interface" type="test_motor" />
+</launch>

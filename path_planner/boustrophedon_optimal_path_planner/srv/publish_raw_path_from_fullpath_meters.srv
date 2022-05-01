@@ -1,0 +1,4 @@
+string input_file_name
+int32 nb_waypoints_path
+---
+string result

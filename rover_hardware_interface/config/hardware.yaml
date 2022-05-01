@@ -1,0 +1,10 @@
+hardware_interface:
+    loop_hz: 50 # hz
+    joints:
+       - wheel_left_joint
+       - wheel_right_joint
+    pid:
+      p: 0.1
+      d: 0.01
+      i: 0.01
+    max_throttle_speed: 100 #rad/s, in order to scale the speed to -1,1 to give to PX4

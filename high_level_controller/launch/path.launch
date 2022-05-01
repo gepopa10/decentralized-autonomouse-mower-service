@@ -1,0 +1,11 @@
+<launch>
+	<arg name="odometry_topic" default="/mobile_base_controller/odom" />
+	<arg name="noisy_odometry_topic" default="/mobile_base_controller/odom" />
+	<arg name="cmd_vel_topic" default="/mobile_base_controller/cmd_vel" />
+
+	<node name="path_controller" pkg="high_level_controller" type="controller_non_linear_diff_drive_traj.py" output="screen">
+    <remap from="/odom" to="$(arg odometry_topic)"/>
+		<remap from="/noisy_odom" to="$(arg noisy_odometry_topic)"/>
+		<remap from="/cmd_vel" to="$(arg cmd_vel_topic)"/>
+  </node>
+</launch>

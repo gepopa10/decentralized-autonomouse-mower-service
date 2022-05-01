@@ -1,0 +1,15 @@
+obstacle_range: 3.0
+raytrace_range: 3.5
+
+footprint: [[-0.205, -0.155], [-0.205, 0.155], [0.077, 0.155], [0.077, -0.155]]
+#robot_radius: 0.17
+
+inflation_layer:
+  inflation_radius: 1.0
+  cost_scaling_factor: 3.0
+
+range_sensor_layer:
+  clear_threshold:    0.46
+  mark_threshold:     0.98
+  clear_on_max_reading: true
+  topics: ["/sonar0","/sonar1","/sonar2","/sonar3"]

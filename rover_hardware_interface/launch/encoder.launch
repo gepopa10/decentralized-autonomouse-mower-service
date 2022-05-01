@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<launch>
+
+  <!-- Publishing topic of encoder -->
+  <arg name="encoder_topic" default="encoder_speed_gpio" />
+  <!-- Params of encoders -->
+  <arg name="encoder_read_frequency" default="100" />
+  <arg name="encoder_gpio_A_num" default="26" />
+  <arg name="encoder_gpio_B_num" default="16" />
+  <arg name="motor_N" default="20" />
+
+  <param name="encoder_read_frequency" type="int" value="$(arg encoder_read_frequency)" />
+  <param name="encoder_gpio_A_num" type="int" value="$(arg encoder_gpio_A_num)" />
+  <param name="encoder_gpio_B_num" type="int" value="$(arg encoder_gpio_B_num)" />
+  <param name="motor_N" type="int" value="$(arg motor_N)" />
+
+  <node name="$(arg encoder_topic)" pkg="rover_hardware_interface" type="encoder_publisher.py" output="screen">
+    <remap from="encoder_gpio_topic" to="$(arg encoder_topic)"/>
+  </node>
+
+</launch>

@@ -1,0 +1,55 @@
+ssh radu@192.168.2.80
+scp ugv_control_interface_v2.py radu@192.168.2.80:./
+python3 ugv_control_interface_v2.py
+scp localization_uwb.py radu@192.168.2.80:./
+scp NonLinearDifferentialController.py radu@192.168.2.80:./
+scp UKF.py radu@192.168.2.80:./
+
+scp loc_uwb.cpp radu@192.168.2.80:./
+
+Run heaven, docker_manager, simulation_orchestrator.
+In orchestrator:
+disc
+load geoloc_dwm1001
+comp
+dep nopull
+
+
+id
+coo
+locate c829 ['rpi2','rpi4','rpi5']
+aloc c829 ['rpi2','rpi4','rpi5']
+debug
+track c829
+stopa
+
+get log from container
+sudo docker cp server_uwb:/root/geolocation/logs/Debug.csv /home/gepopa
+
+scp result.png gepopa@192.168.2.75:./
+
+To reset commands in arduino
+python3
+import serial
+arduino_serial = serial.Serial("/dev/ttyACM0", 115200, timeout = 1)
+arduino_serial.flush()
+exit()
+
+---------------------------------------------------------------------
+---------------------------------------------------------------------
+Step to generate path:
+
+1) Create a csv with posx, posy by enabling UGVControlInterface.save_data() in ugv_control_interface_v2.py
+2) Put the csv in ~/grass/Filter/src/data
+3) Launch ~/grass/Filter/src/perimeter.py changing the data path to the csv created
+	- save_results should be uncommented for the first run since we just generate the .txt with contours. 
+          This will create a .txt file that will be used to generate the path within the contour.
+4) Put the .txt of the contour within ~/grass/GA-TSPCPP/1 and run ~/grass/GA-TSPCPP/TSPCPP.py.
+	- this will use the contour to generate the path within the contour doing rotation to find
+	  the optimal path with the less number of cells and also cells with a very small area
+	  are not taken into account. The result is the fullpath.txt.
+5) Take the new generated fullpath.txt and put it in ~/grass/Filter/src/data. 
+6) Run again ~/grass/Filter/src/perimeter.py but with read_results() uncommented.
+	- This will read the .xtx and transform the path into meters. Also, to_csv_file() will save the data
+	  into a csv.
+

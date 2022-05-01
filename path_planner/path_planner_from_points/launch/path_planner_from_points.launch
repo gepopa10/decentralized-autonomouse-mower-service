@@ -1,0 +1,9 @@
+<launch>
+	<arg name="input_path_topic" default="/move_base_simple/path_raw" />
+	<arg name="output_path_topic" default="/move_base_simple/path" />
+
+	<node name="path_planner_from_points" pkg="path_planner_from_points" type="path_planner_from_points.py" output="screen">
+    <remap from="/move_base_simple/path_raw" to="$(arg input_path_topic)"/>
+		<remap from="/move_base_simple/path" to="$(arg output_path_topic)"/>
+  </node>
+</launch>

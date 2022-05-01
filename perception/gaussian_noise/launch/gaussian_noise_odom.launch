@@ -1,0 +1,14 @@
+<launch>
+	<arg name="odometry_topic" default="/odom" />
+	<arg name="noisy_odometry_topic" default="/noisy_odom" />
+	<arg name="position_noise" default="0.0" />
+	<arg name="theta_noise" default="0.0" />
+
+	<param name="position_noise" type="double" value="$(arg position_noise)" />
+	<param name="theta_noise" type="double" value="$(arg theta_noise)" />
+
+	<node name="gaussian_noise" pkg="gaussian_noise" type="gaussian_noise_odometry.py" output="screen">
+    <remap from="/odom" to="$(arg odometry_topic)"/>
+		<remap from="/noisy_odom" to="$(arg noisy_odometry_topic)"/>
+  </node>
+</launch>

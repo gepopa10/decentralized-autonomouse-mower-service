@@ -1,0 +1,353 @@
+----- VPN Humanitas -----
+sudo openvpn --config george_popescu.ovpn
+
+----- Source workspace -----
+source devel/setup.bash
+or source ~/Documents/catkin_ws/devel/setup.bash
+
+echo $ROS_PACKAGE_PATH
+should give: /home/youruser/catkin_ws/src:/opt/ros/kinetic/share
+
+Orchestrator token:
+eYQsvCGSzXJsCgbZtQxr
+
+using Git
+--------------------------------------------------------------------------
+Check connected accounts:
+ssh -T git@192.168.0.172
+ssh -T git@gitlab.com
+
+git config --global user.email "radupopescu100@gmail.com"
+git config --global user.name "radu"
+git clone git@192.168.0.172:floriankarydes/hxs-feedback.git
+git checkout master
+git pull hxs-feedback master
+
+create a branch:
+git checkout -b <name-of-branch>
+
+work in existing branch:
+git checkout <name-of-branch>
+
+git add hxs-feedback-doc_radu.md
+git commit -m "adding tutorial0 feedback"
+git push origin radu
+
+To check on which remote repository we are working on
+git remote -v
+# View existing remotes
+# origin  https://github.com/user/repo.git (fetch)
+# origin  https://github.com/user/repo.git (push)
+
+git remote set-url origin https://github.com/user/repo2.git
+# Change the 'origin' remote's URL
+
+To delete history:
+Checkout
+	git checkout --orphan latest_branch
+Add all the files
+	git add -A
+Commit the changes
+	git commit -am "commit message"
+Delete the branch
+	git branch -D master
+Rename the current branch to master
+	git branch -m master
+Finally, force update your repository (may have to unprotect the branch in gitlab)
+	git push -f origin master
+
+To reset a folder to some branch (overwrites our changes)
+git fetch origin master
+git reset --hard FETCH_HEAD
+git clean -df
+
+To merge:
+git pull
+git merge origin/master
+
+To publish a local folder to gitlab:
+Create a project in a bigger project for example and just follow the instructions.
+
+To rollback after a pull:
+Find state with: git reflog and then:
+git reset --keep HEAD@{1}
+--------------------------------------------------------------------------
+
+----- Docker -----
+Build local image:
+cd folder 
+./setup_image.sh
+docker build -t heaven_uwb_pkg -f Dockerfile .
+
+see images
+docker image ls
+tag and push image to private repository:
+docker tag heaven_uwb_pkg 192.168.0.172:5000/heaven_uwb_pkg:amd64 && docker push 192.168.0.172:5000/heaven_uwb_pkg:amd64
+check what containers are running
+docker stats
+Entering a container
+docker exec -it drone bash
+then we can do commands like this: source devel/setup.bash && rostopic echo <topicname>
+
+Running a python script inside an image:
+docker run geolocation:latest /root/geolocation/anchor_launcher.py
+but in DockerFile do RUN chmod +x anchor_launcher.py and also at the top of the python script #!/usr/bin/env python3
+
+The orchestrator used the amd64 tag, so we have to build and no need to push to Humanitas server: 
+docker build -t 192.168.0.172:5000/geolocation:amd64 -f Dockerfile .
+
+To delete all images:
+docker rmi -f $(docker images -a -q)
+
+See available images:
+https://gitlab.humanitas.mtl/groups/hyperxspace/-/container_registries
+
+----- Simulator Orchestrator -----
+see available ressources:
+show hosts
+
+--------------- ROS ---------------
+To remotely connect to a container running rosmaster and have rostopic echo work:
+export ROS_MASTER_URI=http://172.172.0.6:11311
+export ROS_IP=192.168.2.75
+sudo gedit /etc/hosts and add the hs_bridge_ip of the container running rosmaster to the file with the hostname (can be found by entering container)
+To get variable: printenv ROS_MASTER_URI
+
+---------------------------Useful commands while working ----------------------------------
+docker build -t 192.168.0.172:5000/geolocation_george:amd64 -f Dockerfile .
+docker build -t 192.168.0.172:5000/geolocation_george_merge:amd64 -f Dockerfile .
+docker build -t 192.168.0.172:5000/netem_radu:amd64 -f Dockerfile_alpine_orch .
+
+docker run 192.168.0.172:5000/geolocation_george:amd64 /root/geolocation/entrypoint.sh 24:0a:c4:1d:57:89 24:0a:c4:1d:57:8e 5.96 7.23 0.0
+
+docker run 192.168.0.172:5000/geolocation_george:amd64 /root/geolocation/anchorsetup.sh 24:0a:c4:1d:57:89 24:0a:c4:1d:57:8e
+
+docker rm geo && docker run --name geo -v /tmp:/tmp -v /dev/pts:/dev/pts 192.168.0.172:5000/geolocation_george:amd64 /root/geolocation/anchorsetup.sh 24:0a:c4:1d:57:89 24:0a:c4:1d:57:8e
+
+docker build -t 192.168.0.172:5000/geolocation_george:amd64 -f Dockerfile_test .
+docker rm geo && docker run --name geo 192.168.0.172:5000/geolocation_george:amd64 python3 /root/geolocation/common/find_anchors.py
+
+docker exec -it geo bash
+
+docker push 192.168.0.172:5000/geolocation_george:amd64
+
+For changes to take effect after building locally the image just do in orch:
+comp
+dep nopull
+
+locate 24:0a:c4:c0:e8:8d ['anc0','anc1','anc2']
+aloc 24:0a:c4:c0:e8:8d ['anc0','anc1','anc2']
+locate xx:xx:xx:xx:xx:xx ['anc0','anc1','anc2']
+locate 24:0a:c4:c0:e8:3d ['anc0','anc1','anc2']
+locate 24:0a:c4:c0:e8:8d;24:0a:c4:c0:e8:3d ['anc0','anc1','anc2'];['anc0','anc1','anc2']
+aloc 24:0a:c4:c0:e8:8d;24:0a:c4:c0:e8:3d ['anc0','anc1','anc2'];['anc0','anc1','anc2']
+locate 24:0a:c4:c0:e8:8d ['anc0','anc1','anc2','anc3','anc4','anc5','anc6']
+
+locate 24:0a:c4:c0:ed:0w ['anc0','anc1','anc2','anc3']
+locate G ['anc0','anc1','anc2','anc3']
+locate tag0 ['anc0','anc1','anc2']
+locate 0006 ['anc0','anc1','anc2']
+locate 0005 ['anc0','anc1','anc2','tag0']
+locate_tdma 0004 ['anc0','anc1','anc2']
+locate 0006 ['anc0','anc1','anc2']
+locate 0006 ['anc0','anc1','anc2','tag0']
+locate_tdma 0006 ['anc0','anc1','anc2']
+locate_tdma 0006 ['anc0','anc1','anc2','tag0']
+locate_tdma 0006;0007;0008 ['anc0','anc1','anc2'];['anc0','anc1','anc2'];['anc0','anc1','anc2']
+locate_tdma 0006;0007;0008;0009 ['anc0','anc1','anc2','tag0'];['anc0','anc1','anc2','tag0'];['anc0','anc1','anc2','tag0'];['anc0','anc1','anc2','tag0']
+locate_tdma 0006;0007;0008;0009 ['anc0','anc1','anc2','tag1','tag0'];['anc0','anc1','anc2','tag1','tag0'];['anc0','anc1','anc2','tag1','tag0'];['anc0','anc1','anc2','tag1','tag0']
+locate 0006;0007;0008;0009 ['anc0','anc1','anc2','tag1','tag0'];['anc0','anc1','anc2','tag1','tag0'];['anc0','anc1','anc2','tag1','tag0'];['anc0','anc1','anc2','tag1','tag0']
+aloctdma 0004 ['anc0','anc1','anc2']
+aloctdma 0004;0005;0006 ['anc0','anc1','anc2'];['anc0','anc1','anc2'];['anc0','anc1','anc2']
+aloctdma 0006;0007;0008;0009 ['anc0','anc1','anc2','tag0'];['anc0','anc1','anc2','tag0'];['anc0','anc1','anc2','tag0'];['anc0','anc1','anc2','tag0']
+aloctdma 0006;0007;0008;0009 ['anc0','anc1','anc2','tag1'];['anc0','anc1','anc2','tag1'];['anc0','anc1','anc2','tag1'];['anc0','anc1','anc2','tag1']
+aloctdma 0006;0007;0008;0009 ['anc0','anc1','anc2','tag1','tag0'];['anc0','anc1','anc2','tag1','tag0'];['anc0','anc1','anc2','tag1','tag0'];['anc0','anc1','anc2','tag1','tag0']
+aloc 0006;0007;0008;0009 ['anc0','anc1','anc2','tag1','tag0'];['anc0','anc1','anc2','tag1','tag0'];['anc0','anc1','anc2','tag1','tag0'];['anc0','anc1','anc2','tag1','tag0']
+aloc 0006;0007;0008;0009 ['anc0','anc1','anc2','tag0'];['anc0','anc1','anc2','tag0'];['anc0','anc1','anc2','tag0'];['anc0','anc1','anc2','tag0']
+locate tag0;tag1 ['anc0','anc1','anc2'];['anc0','anc1','anc2']
+aloc tag0;tag1 ['anc0','anc1','anc2'];['anc0','anc1','anc2']
+aloc 0004;0005 ['anc0','anc1','anc2'];['anc0','anc1','anc2']
+aloc tag0 ['anc0','anc1','anc2']
+aloc 0004 ['anc0','anc1','anc2']
+alocsync tag0 ['anc0','anc1','anc2']
+alocsync tag0;tag1 ['anc0','anc1','anc2'];['anc0','anc1','anc2']
+alocsync 0004;0005 ['anc0','anc1','anc2'];['anc0','anc1','anc2']
+track tag0
+track 0004
+track 0004;0005;0006
+track 0006;0007;0008;0009
+track ed0w
+aloc 24:0a:c4:c0:ed:0w ['anc0','anc1','anc2','anc3']
+aloc 24:0a:c4:c0:ed:0w ['anc6','anc0','anc4','anc2']
+
+locate 0006 ['anc0','anc1','anc2','anc3']
+aloc 0005 ['anc0','anc1','anc2','anc3']
+aloc 0005;0006 ['anc0','anc1','anc2','anc3'];['anc0','anc1','anc2','anc3']
+alocsync 0005;0006 ['anc0','anc1','anc2','anc3'];['anc0','anc1','anc2','anc3']
+aloc 0005;0006;0007;0008 ['anc0','anc1','anc2','anc3'];['anc0','anc1','anc2','anc3'];['anc0','anc1','anc2','anc3'];['anc0','anc1','anc2','anc3']
+alocsync 0005;0006;0007;0008 ['anc0','anc1','anc2','anc3'];['anc0','anc1','anc2','anc3'];['anc0','anc1','anc2','anc3'];['anc0','anc1','anc2','anc3']
+aloc 0005;0006;0007;0008;0009 ['anc0','anc1','anc2','anc3'];['anc0','anc1','anc2','anc3'];['anc0','anc1','anc2','anc3'];['anc0','anc1','anc2','anc3'];['anc0','anc1','anc2','anc3']
+alocsync 0005;0006;0007;0008;0009 ['anc0','anc1','anc2','anc3'];['anc0','anc1','anc2','anc3'];['anc0','anc1','anc2','anc3'];['anc0','anc1','anc2','anc3'];['anc0','anc1','anc2','anc3']
+
+Compile and library pybind
+c++ -O3 -Wall -shared -std=c++11 -fPIC `python3 -m pybind11 --includes` find_anchors.cpp -o find_anchors`python3-config --extension-suffix`
+
+reception from anchor:  0.0022826194763183594 -heaven
+reception from anchor:  0.0019681453704833984 -heaven socket
+reception from anchor:  0.0002193450927734375 -socket
+------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------------------
+Real UWB modules
+
+Find ip addresses on the network:
+nmap -sP 192.168.2.0/24
+
+ssh root@192.168.2.204
+Humanitas2020
+ssh root@192.168.10.3
+
+Shutdown RPI:
+poweroff
+Reboot RPI:
+reboot
+
+transfert file via ssh:
+scp bytes.py root@192.168.2.204:./humanitas
+scp server_config.yaml root@192.168.10.5:./humanitas/docker_manager/config
+scp test_serial.py radu@192.168.2.80:
+
+Procedure to update docker_manager, orch, and heaven on pis
+scp server_config.yaml root@192.168.10.2:./humanitas
+rm -r docker_manager
+git clone https://gitlab.com/cloud_tests/docker_manager
+pip3 install -r requirements.txt
+scp server_config.yaml root@192.168.10.3:./humanitas/docker_manager/config
+rm -r simulation_orchestrator
+git clone https://gitlab.com/cloud_tests/simulation_orchestrator
+git remote set-url origin https://gitlab.com/cloud_tests/heaven_py3
+
+Cross compile container:
+Install on pc qemu-user-static
+chmod +x multi_cross_architecture.sh
+./multi_cross_architecture.sh Dockerfile geolocation_george --push
+Build only for the pis:
+chmod +x cross_architecture_arm64v8.sh
+./cross_architecture_arm64v8.sh Dockerfile geolocation_george --push
+
+Change remote url of a git folder: (to update the pckgs via these public mirrors instead of private humanitas server)
+git remote set-url origin https://gitlab.com/cloud_tests/docker_manager
+git remote set-url origin https://gitlab.com/cloud_tests/simulation_orchestrator
+git remote set-url origin https://gitlab.com/cloud_tests/heaven_py3
+
+Active certificate on pis:
+cd humanitas/docker_manager/scripts
+./install_crt.sh
+
+Transfert docker image and load it on another computer via ssh:
+docker save 192.168.0.172:5000/geolocation_george:arm64v8 | bzip2 | pv | \
+     ssh root@192.168.11.3 'bunzip2 | docker load'
+
+Available space on sd card:
+df -h
+
+scp george_popescu.ovpn root@192.168.2.204:
+sudo openvpn --config george_popescu.ovpn
+
+Test local repository
+On main pc:
+scp -r /docker_data/certs/domain.crt root@192.168.11.4:/tmp/
+On pis:
+mkdir -p /etc/docker/certs.d/192.168.2.75:5000/
+cp /tmp/domain.crt /etc/docker/certs.d/192.168.2.75:5000/
+docker pull 192.168.2.75:5000/busybox
+
+To see logs of a container in docker:
+docker logs $container_name
+
+locate D ['rpi1','rpi2','rpi3']
+locate 578f ['rpi1','rpi2','rpi3']
+locate 0d90 ['rpi1','rpi2','rpi3']
+locate c829 ['rpi2','rpi4','rpi5']
+aloc 0db0 ['rpi2','rpi4','rpi5']
+track 0db0
+locate 578f ['rpi1','rpi2','rpi3','rpi4']
+locate 041f ['rpi1','rpi2','rpi3','rpi4']
+locate rpi4 ['rpi1','rpi2','rpi3']
+locate_tdma 0796 ['rpi1','rpi2','rpi3']
+locate_tdma c829 ['rpi1','rpi2','rpi3']
+locate_tdma 0796;c829 ['rpi1','rpi2','rpi3'];['rpi1','rpi2','rpi3']
+locate_tdma 0796;c829;0d90 ['rpi1','rpi2','rpi3'];['rpi1','rpi2','rpi3'];['rpi1','rpi2','rpi3']
+aloc D ['rpi1','rpi2','rpi3']
+aloc 578f ['rpi1','rpi2','rpi3','rpi4']
+aloc 0796 ['rpi1','rpi2','rpi3','rpi4']
+aloc 0796 ['rpi1','rpi2','rpi3']
+aloc 578f;0796;041f ['rpi1','rpi2','rpi3','rpi4'];['rpi1','rpi2','rpi3','rpi4'];['rpi1','rpi2','rpi3','rpi4']
+alocsync 578f;0796 ['rpi1','rpi2','rpi3'];['rpi1','rpi2','rpi3']
+aloctdma 0796 ['rpi1','rpi2','rpi3']
+aloctdma 0796;c829 ['rpi1','rpi2','rpi3'];['rpi1','rpi2','rpi3']
+aloctdma 0796;c829;0d90 ['rpi1','rpi2','rpi3'];['rpi1','rpi2','rpi3'];['rpi1','rpi2','rpi3']
+aloc 0796;c829 ['rpi1','rpi2','rpi3'];['rpi1','rpi2','rpi3']
+aloc 0796;c829;0d90 ['rpi1','rpi2','rpi3'];['rpi1','rpi2','rpi3'];['rpi1','rpi2','rpi3']
+track 578f;0796;041f
+track 0796
+track 0796;c829
+track 0796;c829;0d90
+aloc rpi4 ['rpi1','rpi2','rpi3']
+alocsync rpi4;rpi5
+track rpi4;rpi5
+
+pour que serial marche sur RPI avec openWrt enlever console=serial0,115200 dans /boot/cmdline.txt
+
+check time sync:
+ntpq -p
+ntpstat
+timedatectl status
+sudo service ntp status
+
+Setup time sync to server:
+opkg update
+opkg install ntpd
+/etc/init.d/sysntpd disable
+/etc/init.d/ntpd enable
+/etc/init.d/ntpd start
+netstat -l | grep ntp
+add to /etc/hosts
+192.168.2.75 mainpchost
+in /etc/config/system add the new host
+
+PTP (Precision Time Protocol)
+ptp4l -i eth0 -m
+ptp4l -f /etc/ptp4l.conf
+ptp4l -i enp3s0 -m -s
+
+Client sur OpenWrt:
+nano /etc/chrony/chrony.conf rajouter -> server mainhostpc iburst (pas vraiment utile) et effacer le reste
+nano /etc/config/chrony mettre 
+dans hostname -> mainpchost
+        option maxpoll '4'
+        option minpoll '4'
+config maxdelayratio '1.1'
+Master sur Ubuntu:
+sudo nano /etc/chrony/chrony.conf -> allow 192.168.2.0/24
+sudo systemctl restart chronyd
+
+/etc/init.d/chronyd restart
+/etc/init.d/chronyd enable
+chronyc sources
+chronyc tracking
+
+get log from container
+sudo docker cp server_uwb:/root/geolocation/logs/Debug.csv /home/gepopa
+
+
+multi_cross_architecture.sh for local dockerfile:
+
+repo_ip="192.168.2.75"
+repo_port="5000"
+repo="${repo_ip}:${repo_port}"
+# architecture mapping
+docker_archs=( 'amd64' 'arm64v8' )
+qemu_archs=( 'x86_64' 'aarch64' )
+manifest_archs=( 'amd64' 'arm64' )
+
+

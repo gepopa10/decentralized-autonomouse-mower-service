@@ -1,0 +1,177 @@
+For turtlebot3 packages in workspace folder (contains also magni robot):
+
+https://github.com/ROBOTIS-GIT/turtlebot3
+https://github.com/ROBOTIS-GIT/turtlebot3_simulations
+
+First export a model:
+export TURTLEBOT3_MODEL="waffle"
+
+We can run for example:
+roslaunch turtlebot3_fake turtlebot3_fake.launch
+
+and publish:
+rostopic pub -r10 /cmd_vel geometry_msgs/Twist "linear:
+  x: 0.5
+  y: 0.0
+  z: 0.0
+angular:
+  x: 0.0
+  y: 0.0
+  z: 1.0"
+
+rostopic echo /odom/pose/pose/position
+
+roslaunch rover_con main.launch
+
+rostopic pub /move_base_simple/goal geometry_msgs/PoseStamped "header:
+  seq: 0
+  stamp: now
+  frame_id: ''
+pose:
+  position:
+    x: 1.0
+    y: 0.0
+    z: 0.0
+  orientation:
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 0.0" -s
+
+rostopic pub /move_base_simple/goal geometry_msgs/PoseStamped "header:
+  seq: 0
+  stamp: now
+  frame_id: ''
+pose:
+  position:
+    x: 1.0
+    y: 0.0
+    z: 0.0
+  orientation:
+    x: 0.0
+    y: 0.0
+    z: 0.38
+    w: 0.92" -s
+
+roslaunch turtlebot3_gazebo turtlebot3_house.launch
+roslaunch turtlebot3_gazebo turtlebot3_world.launch
+
+roslaunch turtlebot3_navigation turtlebot3_navigation.launch
+
+GOAL:
+rostopic pub /move_base/goal move_base_msgs/MoveBaseActionGoal "header:
+  seq: 0
+  stamp:
+    secs: 0
+    nsecs: 0
+  frame_id: ''
+goal_id:
+  stamp:
+    secs: 0
+    nsecs: 0
+  id: ''
+goal:
+  target_pose:
+    header:
+      seq: 0
+      stamp:
+        secs: 0
+        nsecs: 0
+      frame_id: 'map'
+    pose:
+      position:
+        x: -1.0
+        y: -4.0
+        z: 0.0
+      orientation:
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0"
+
+
+###################### Save a map of gazebo world ######################
+########################################################################
+roslaunch turtlebot3_slam turtlebot3_slam.launch slam_methods:=gmapping
+
+Random walk to explore and map:
+roslaunch turtlebot3_gazebo turtlebot3_simulation.launch
+or:
+roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch
+
+Save .pgm and .yaml file:
+rosrun map_server map_saver -f ~/map
+
+########################################################################
+########################################################################
+
+Test with sonar:
+scan_topic to scan_sonar in turtlebot3/turtlebot3_navigation/amcl.launch
+laser_scan_sub_ to scan_sonar in turtlebot3_simulations/turtlebot3_gazebo/src/turtlebot3_drive.cpp
+scan_topic_name to scan_sonar in /navigation/amcl/src/amcl_node.cpp
+observation_sources and topic and scan: (so 3 params) to scan_sonar turtlebot3/turtlebot3_navigation/param/costmap_common_params_waffle.yaml
+
+######################### Theorical notes ##############################
+########################################################################
+
+-When pdist_scale is larger than gdist_scale the robot drives only trough global path (often stops and sets up orientation) and wastes more time (match lasts only 90 seconds). (additional tips http://wiki.ros.org/navigation/Tutorials/Navigation%20Tuning%20Guide)
+
+- AMCL does not manage the maps, it is actually a localization system that runs on a known map. This localization system is based on the Monte Carlo localization approach: it randomly distributes the particles in a known map, representing the possible robot locations, and then uses a particle filter to determine the actual robot pose.
+
+-The local planner is responsible for creating a trajectory rollout over the global trajectory, that is able to return to the original trajectory with the fewer cost.
+
+-AMCL requires a robot odometry which estimates the pose of the robot from the robot’s
+internal states such as speed and steering angle. AMCL then compensate the error of this
+estimation which is called odometry drift.
+
+######################### Costmap Layers ###############################
+########################################################################
+
+sudo apt install ros-melodic-people-msgs
+The default namespaces are static_layer, obstacle_layer and inflation_layer. see http://wiki.ros.org/costmap_2d/layered
+
+######################### Hardware interface ###########################
+########################################################################
+roslaunch rover_hardware_interface rover_controller.launch
+Ressources:
+http://wiki.ros.org/diff_drive_controller
+https://github.com/eborghi10/my_ROS_mobile_robot/blob/e04acfd3e7eb4584ba0aab8a969a74d6c30eed34/my_robot_base/include/my_robot_hw_interface.h
+https://github.com/husky/husky/blob/kinetic-devel/husky_base/include/husky_base/husky_hardware.h
+https://medium.com/@slaterobotics/how-to-implement-ros-control-on-a-custom-robot-748b52751f2e
+https://www.theconstructsim.com/ros-qa-126-how-to-configure-the-differential-drive-ros-controller/
+https://answers.ros.org/question/307520/what-are-the-steps-to-use-diff_drive_controller-in-a-physical-robot/
+
+For turtlebot3, there is a diff controller plugin activated by default but it will work only in gazebo,
+see libgazebo_ros_diff_drive.so in /turtlebot3/turtlebot3_description/urdf/turtlebot3_waffle.gazebo.xacro
+
+We need to get rid of this controller and use the hardware interface with ros_control and diff_drive_controller
+from ros_controllers
+
+In husky, they launch libgazebo_ros_control.so also when launching the hardware interface in base.launch
+
+When we launch rover_hardware_interface and controller_manager we loose joint_states link with gazebo and nothing works
+Try without gazebo with roslaunch turtlebot3_fake turtlebot3_fake.launch
+Conclusion: tf_broadcaster_.sendTransform(odom_tf); the tfs make the robot actually move, robot_state_publisher doesnt seems to calculate the tfs, just help us see it in rviz
+
+Test odometry:
+rostopic echo /mobile_base_controller/odom/pose/pose/position/x
+rostopic echo /gazebo/link_states/pose[2]/position/x
+
+export custom gazebo plugin:
+export GAZEBO_PLUGIN_PATH=$HOME/workspace/src/set_vel_plugin/build:$GAZEBO_PLUGIN_PATH
+
+Next: only odom doesnt work, try with giving positions to jointStateHandle and see the code of diff_drive how odom is calculated
+or: just look at turtlebot3_fake_node to see how odom is calculated...
+Conclusion: joint position has to be given
+
+add friction to a joint to test controller:
+<dynamics damping="0.0" friction="0.1"/>
+
+Run test in rover_hardware_interface:
+catkin_make run_tests_rover_hardware_interface
+or:
+roslaunch rover_hardware_interface motor.test
+or:
+rostest --text rover_hardware_interface motor.test
+########################################################################
+########################################################################

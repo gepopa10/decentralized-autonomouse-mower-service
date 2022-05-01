@@ -1,0 +1,15 @@
+material Fence/Diffuse
+{
+  receive_shadows off
+  technique
+  {
+    pass
+    {
+      texture_unit
+      {
+        texture fence.png
+        scale 0.1 0.1
+      }
+    }
+  }
+}
