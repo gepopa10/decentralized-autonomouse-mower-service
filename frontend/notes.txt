@@ -1,0 +1,2 @@
+# To kill port:
+fuser -k 8000/tcp

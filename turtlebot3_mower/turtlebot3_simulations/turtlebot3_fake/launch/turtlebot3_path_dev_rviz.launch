@@ -7,8 +7,8 @@
   <param name="ini_pos_x" value="2.46"/>
   <param name="ini_pos_y" value="-10.47"/>
   <param name="ini_yaw" value="0.0"/>
-  <arg name="position_noise" default="0.2"/>
-  <arg name="theta_noise" default="0.2"/>
+  <arg name="position_noise" default="0.0"/>
+  <arg name="theta_noise" default="0.0"/>
 
   <!-- Position when testing smaller trajs -->
   <!-- <param name="ini_pos_x" value="0"/>
