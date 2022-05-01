@@ -1,2 +1,8 @@
 # To kill port:
 fuser -k 8000/tcp
+
+# To see web console:
+Ctrl+Shift+C
+
+# To find a ros package:
+rospack find rosbridge_server
