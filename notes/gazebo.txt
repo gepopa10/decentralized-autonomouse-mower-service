@@ -1,8 +1,0 @@
-To know all available colors:
-http://wiki.ros.org/simulator_gazebo/Tutorials/ListOfMaterials
-
-Tag scale before importing model doesnt work.
-If the model in models folder has the same name as in .gazebo then it will take
-the one in .gazebo
-
-Gazebo models can be find here https://github.com/osrf/gazebo_models
