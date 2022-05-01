@@ -1,0 +1,39 @@
+@import url('https://fonts.googleapis.com/css2?family=Courier+Prime&family=EB+Garamond&family=Lora:wght@400;500&family=Peddana&family=Roboto+Mono:wght@200&family=Special+Elite&display=swap');
+
+
+* {
+  text-align: center;
+  font-family: 'Computer Modern', serif;
+  color: black;
+}
+
+body {
+  background-image: url('./assets/bg.png');
+}
+
+h1{
+  font-size: 50px;
+  color: white;
+}
+
+p {
+  font-weight: 1100;
+}
+
+
+button, p, input{
+  font-size: 32px;
+}
+
+
+button{
+  border: 0px solid gray;
+  background-color: #DAF7A6;
+  color: black;
+
+}
+
+button:hover{
+  box-shadow: 0 0 3px 2px gray;
+  cursor: pointer;
+}

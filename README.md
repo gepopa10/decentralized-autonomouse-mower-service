@@ -1,6 +1,6 @@
 # Decentralized Autonomous Grass Mower Service
 
-![Simulation Rviz](images/rviz_uwb.png?raw=true "Title")
+![Simulation Rviz](images/rviz.png?raw=true "Title")
 
 To launch development environnment with rviz:
 ```
