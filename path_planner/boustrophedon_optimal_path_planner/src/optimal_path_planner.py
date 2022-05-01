@@ -1,3 +1,4 @@
+from __future__ import print_function
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
@@ -12,6 +13,7 @@ from Contour import *
 import os
 from math import pi
 from pprint import pprint
+
 
 # 1 : 640 * 480
 # 2 : 1200 * 1200

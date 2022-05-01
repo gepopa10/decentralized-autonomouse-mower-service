@@ -30,7 +30,7 @@ def Boustrophedon_Cellular_Decomposition() :
             connective_parts.append((start_point, len(slice)))
         return connectivity, connective_parts
 
-    def get_adjacency_matrix(left_parts, right_parts) -> np.ndarray :
+    def get_adjacency_matrix(left_parts, right_parts):
         adjacency_matrix = np.zeros([len(left_parts), len(right_parts)], dtype = bool)
         for i, left_part in enumerate(left_parts) :
             for j, right_part in enumerate(right_parts) :
