@@ -6,3 +6,15 @@ Ctrl+Shift+C
 
 # To find a ros package:
 rospack find rosbridge_server
+
+#Apache server
+sudo apt-get install apache2
+sudo service apache2 start
+sudo cp -r /home/gepopa/ros_ws/src/decentralized-autonomous-mower-service/turtlebot3_mower/turtlebot3/turtlebot3_description /var/www/html
+
+Access to XMLHttpRequest at 'http://localhost/turtlebot3_description/meshes/bases/waffle_base.stl'
+from origin 'http://127.0.0.1:3000' has been blocked by CORS policy:
+No 'Access-Control-Allow-Origin' header is present on the requested resource.
+
+To fix:
+CORS Unblock

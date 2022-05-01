@@ -60,7 +60,7 @@ const initialize = async () => {
 		ros: ros,
 		angularThres: 0.01,
 		transThres: 0.01,
-		rate: 10.0,
+		rate: 60.0,
 		fixedFrame: '/odom'
 	});
 
@@ -68,9 +68,9 @@ const initialize = async () => {
 	var urdfClient = new ROS3D.UrdfClient({
 		ros: ros,
 		tfClient: tfClient,
-		path: 'http://resources.robotwebtools.org/',
+		path: 'http://localhost:80/',
 		rootObject: viewer.scene,
-		loader: ROS3D.COLLADA_LOADER_2
+		loader: ROS3D.COLLADA_LOADER
 	});
 
 	// Setup the marker clients.
