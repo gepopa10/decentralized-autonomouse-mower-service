@@ -23,6 +23,88 @@ const initialize = async () => {
 		console.log('Connection to websocket server closed.');
 	});
 
+	// Create the main viewer.
+	var viewer = new ROS3D.Viewer({
+		divID: 'urdf',
+		width: 600,
+		height: 300,
+		antialias: true,
+		background: '#ffffff',
+		fixedFrame: '/odom'
+	});
+
+	var listener = new ROSLIB.Topic({
+		ros: ros,
+		name: '/odom',
+		messageType: 'nav_msgs/Odometry'
+	});
+
+	listener.subscribe(function(message) {
+		var basePose = new ROSLIB.Pose(message.pose.pose);
+		viewer.cameraControls.center.x = basePose.position.x;
+		viewer.cameraControls.center.y = basePose.position.y;
+		viewer.cameraControls.center.z = basePose.position.z;
+	});
+
+	// Add a grid.
+	var grid = new ROS3D.Grid({
+		num_cells: 500,
+		color: '#cccccc',
+		lineWidth: 1,
+		cellSize: 1
+	});
+	viewer.addObject(grid);
+
+	// Setup a client to listen to TFs.
+	var tfClient = new ROSLIB.TFClient({
+		ros: ros,
+		angularThres: 0.01,
+		transThres: 0.01,
+		rate: 10.0,
+		fixedFrame: '/odom'
+	});
+
+	// Setup the URDF client.
+	var urdfClient = new ROS3D.UrdfClient({
+		ros: ros,
+		tfClient: tfClient,
+		path: 'http://resources.robotwebtools.org/',
+		rootObject: viewer.scene,
+		loader: ROS3D.COLLADA_LOADER_2
+	});
+
+	// Setup the marker clients.
+	var markerClientFootprints = new ROS3D.MarkerClient({
+		ros: ros,
+		tfClient: tfClient,
+		topic: '/move_base_simple/marker/footprints',
+		rootObject: viewer.scene
+	});
+	var markerClientPath = new ROS3D.MarkerClient({
+		ros: ros,
+		tfClient: tfClient,
+		topic: '/move_base_simple/marker/path',
+		rootObject: viewer.scene
+	});
+	var markerClientPathRaw = new ROS3D.MarkerClient({
+		ros: ros,
+		tfClient: tfClient,
+		topic: '/move_base_simple/marker/path_raw',
+		rootObject: viewer.scene
+	});
+	var markerClientNextGoals = new ROS3D.MarkerClient({
+		ros: ros,
+		tfClient: tfClient,
+		topic: '/move_base_simple/marker/next_goals',
+		rootObject: viewer.scene
+	});
+	var markerClientPerimeter = new ROS3D.MarkerClient({
+		ros: ros,
+		tfClient: tfClient,
+		topic: '/move_base_simple/marker/perimeter',
+		rootObject: viewer.scene
+	});
+
 	async function printLoadingBar() {
 		var template = "Working: "
 		var toPrint
@@ -42,25 +124,25 @@ const initialize = async () => {
 
 	sendCoordinatesButton.addEventListener('click', () => {
 		console.log(coordinates.value);
-    printLoadingBar();
+		printLoadingBar();
 
-    var publish_raw_path_from_fullpath_meters_client = new ROSLIB.Service({
-      ros: ros,
-      name: '/publish_raw_path_from_fullpath_meters',
-      serviceType: 'boustrophedon_optimal_path_planner/publish_raw_path_from_fullpath_meters'
-    });
+		var publish_raw_path_from_fullpath_meters_client = new ROSLIB.Service({
+			ros: ros,
+			name: '/publish_raw_path_from_fullpath_meters',
+			serviceType: 'boustrophedon_optimal_path_planner/publish_raw_path_from_fullpath_meters'
+		});
 
-    var request = new ROSLIB.ServiceRequest({
-      input_file_name: "fullpath_meters.txt",
-      nb_waypoints_path: parseInt(coordinates.value)
-    });
+		var request = new ROSLIB.ServiceRequest({
+			input_file_name: "fullpath_meters.txt",
+			nb_waypoints_path: parseInt(coordinates.value)
+		});
 
-    publish_raw_path_from_fullpath_meters_client.callService(request, function(result) {
-      console.log('Result for service call on ' +
-        publish_raw_path_from_fullpath_meters_client.name +
-        ': ' +
-        result.result);
-    });
+		publish_raw_path_from_fullpath_meters_client.callService(request, function(result) {
+			console.log('Result for service call on ' +
+				publish_raw_path_from_fullpath_meters_client.name +
+				': ' +
+				result.result);
+		});
 
 	});
 

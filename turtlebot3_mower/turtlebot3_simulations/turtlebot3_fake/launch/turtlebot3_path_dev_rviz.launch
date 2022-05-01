@@ -54,4 +54,7 @@
     <arg name="port" default="9091" />
     <arg name="address" default="0.0.0.0" />
   </include>
+
+  <node name="tf2_web_republisher" pkg="tf2_web_republisher" type="tf2_web_republisher" output="screen"/>
+
 </launch>

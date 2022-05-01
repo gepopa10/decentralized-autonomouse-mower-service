@@ -3,7 +3,7 @@
 from __future__ import division # to have 2 ints divided and get a float as result
 from boustrophedon_optimal_path_planner.srv import publish_raw_path_from_fullpath_meters
 from geometry_msgs.msg import PoseStamped, Point
-from visualization_msgs.msg import Marker
+from visualization_msgs.msg import Marker, MarkerArray
 from nav_msgs.msg import Path
 import pyclipper
 import rospy
@@ -46,8 +46,10 @@ def publish_path_from_file(filename, nb_waypoints_path):
     # Publisher which will publish the path from file
     path_publisher = rospy.Publisher('/move_base_simple/path', Path, queue_size=10)
 
-    # Publisher for markers on permimeter and obstacles
+    # Publisher for markers
     perimeter_publisher_marker = rospy.Publisher('/move_base_simple/marker/perimeter', Marker, queue_size=10)
+    path_publisher_marker = rospy.Publisher('/move_base_simple/marker/path', Marker, queue_size=10)
+    path_publisher_marker_array = rospy.Publisher('/move_base_simple/marker_array/path', MarkerArray, queue_size=10)
 
     time.sleep(2) # so the pub is fully created before using it
 
@@ -73,6 +75,8 @@ def publish_path_from_file(filename, nb_waypoints_path):
     rospy.loginfo("Publishing a path of %i points from a path of %i waypoints...", len(path.poses), len(fullpath))
     # Publishing
     path_publisher.publish(path)
+
+    vizualize_paths(path, path_publisher_marker, path_publisher_marker_array)
 
     file.close()
 
@@ -148,6 +152,59 @@ def vizualize_perimeter_obstacles(this_folder, path, perimeter_publisher_marker)
 
 	input.close()
 	rospy.loginfo("Publishing perimeter of %i points and also %i obstacles points...", len(perimeter), len(polygons))
+
+def vizualize_paths(path, pub_path, pub_path_array):
+	count = 0
+
+	#Publishing planned path
+	points_path = MarkerArray()
+
+	line_strip_path = Marker()
+	line_strip_path.header = path.header
+	line_strip_path.lifetime = rospy.Duration()
+	line_strip_path.id = count;
+	count +=1
+	line_strip_path.type = line_strip_path.LINE_STRIP
+	line_strip_path.action = line_strip_path.ADD
+	line_strip_path.pose.orientation.w = 1.0
+
+	line_strip_path.scale.x = 0.02
+
+	line_strip_path.color.a = 1.0
+	line_strip_path.color.g = 1.0
+
+	for path_point in path.poses:
+		point_path = Marker()
+		point_path.header = path.header
+		point_path.lifetime = rospy.Duration()
+		point_path.id = count
+		count +=1
+		point_path.type = point_path.SPHERE
+		point_path.action = point_path.ADD
+		point_path.pose.orientation.w = 1.0
+
+		point_path.scale.x = 0.01
+		point_path.scale.y = 0.01
+		point_path.scale.z = 0.01
+
+		point_path.color.a = 1.0
+		point_path.color.r = 1.0
+
+		point_path.pose.position.x = path_point.pose.position.x
+		point_path.pose.position.y = path_point.pose.position.y
+		point_path.pose.position.z = 0
+
+		points_path.markers.append(point_path)
+
+		p = Point()
+		p.x = path_point.pose.position.x
+		p.y = path_point.pose.position.y
+		p.z = 0
+
+		line_strip_path.points.append(p)
+
+	pub_path_array.publish(points_path)
+	pub_path.publish(line_strip_path)
 
 def dpi_to_cartesian(perimeter, margin): # margin should be negative for obstacle
     pco = pyclipper.PyclipperOffset()
