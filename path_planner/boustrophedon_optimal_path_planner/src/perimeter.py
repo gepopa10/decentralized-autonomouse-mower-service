@@ -470,17 +470,7 @@ def contour_anticlockwise(posx, posy, x0, y0):
 if __name__ == '__main__':
 
     path="data_files/"
-    datafile = 'data20201029-150634.csv'
-    # datafile = 'Debug_cour.csv'
-    # datafile = 'Debug_chambre.csv'
-    fullPath=path+datafile
-
-    # fitted_x, fitted_y, x0, y0, posx_raw, posy_raw = fit_contour(path, datafile, plot = True)
-
     range_meters = 20
     dpi = 2000 #so 1m = 100dpi
     translation = {'x':0, 'y':11.1} #applied translation for the optimal path planner that takes only positive values
-    # save_results(path, 'input_raw_29oct15h06.txt', fitted_x, fitted_y, x0, y0, range_meters, dpi) #we put this in case 1 as input_raw.txt input.txt is the rotated one
     posx, posy = read_results(path, 'fullpath.txt', 'fullpath_meters.txt', range_meters, dpi, translation)
-    # to_csv_file(path, 'fullpath_29oct15h06.csv', posx, posy)
-    # animate(posx, posy, posx_raw, posy_raw)

@@ -1,9 +1,9 @@
 <launch>
-	<arg name="input_path_topic" default="/move_base_simple/path_raw" />
-	<arg name="output_path_topic" default="/move_base_simple/path" />
+	<arg name="input_path_topic" default="/path_planner/perimeter_points" />
+	<arg name="output_translation_topic" default="/path_planner/translation" />
 
 	<node name="optimal_path_planner" pkg="boustrophedon_optimal_path_planner" type="optimal_path_planner.py" output="screen">
-    <remap from="/move_base_simple/path_raw" to="$(arg input_path_topic)"/>
-		<remap from="/move_base_simple/path" to="$(arg output_path_topic)"/>
+    <remap from="/path_planner/perimeter_points" to="$(arg input_path_topic)"/>
+		<remap from="/path_planner/translation" to="$(arg output_translation_topic)"/>
   </node>
 </launch>
