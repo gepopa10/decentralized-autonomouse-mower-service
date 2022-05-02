@@ -1,7 +1,6 @@
 const ethereumButton = document.getElementById('connectWallet');
-const sendCoordinatesButton = document.getElementById('sendCoordinates');
+const StartMissionButton = document.getElementById('StartMission');
 const loadingBar = document.getElementById('loadingBar');
-const coordinates = document.getElementById('perimeterExtremities');
 
 const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
 
@@ -117,13 +116,10 @@ const initialize = async () => {
 			await sleep(500)
 		}
 
-		loadingBar.innerHTML = "----> Finished <----"
-		await sleep(15000)
-		loadingBar.innerHTML = ""
+		loadingBar.innerHTML = "----> Executing <----"
 	}
 
-	sendCoordinatesButton.addEventListener('click', () => {
-		console.log(coordinates.value);
+	StartMissionButton.addEventListener('click', () => {
 		printLoadingBar();
 
 		var publish_raw_path_from_fullpath_meters_client = new ROSLIB.Service({
@@ -134,7 +130,7 @@ const initialize = async () => {
 
 		var request = new ROSLIB.ServiceRequest({
 			input_file_name: "fullpath_meters.txt",
-			nb_waypoints_path: parseInt(coordinates.value)
+			nb_waypoints_path: 4000
 		});
 
 		publish_raw_path_from_fullpath_meters_client.callService(request, function(result) {
