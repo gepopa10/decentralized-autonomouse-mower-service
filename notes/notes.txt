@@ -11,6 +11,7 @@ rospack find rosbridge_server
 sudo apt-get install apache2
 sudo service apache2 start
 sudo cp -r /home/gepopa/ros_ws/src/decentralized-autonomous-mower-service/turtlebot3_mower/turtlebot3/turtlebot3_description /var/www/html
+then type localhost on webpage to access the stored files
 
 Access to XMLHttpRequest at 'http://localhost/turtlebot3_description/meshes/bases/waffle_base.stl'
 from origin 'http://127.0.0.1:3000' has been blocked by CORS policy:
@@ -21,3 +22,6 @@ CORS Unblock
 
 # To test end of mission msg:
 rostopic pub /move_base_simple/mission_finished std_msgs/Float64 "data: 20.1"
+
+# Use ngrok
+ngrok config add-authtoken 28cpdZvkW8hOGJe5bZX6xmfe8Vi_6Xc3xdb6e8i3XZ5YHfexp
