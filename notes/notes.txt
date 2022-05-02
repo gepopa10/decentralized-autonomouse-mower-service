@@ -18,3 +18,6 @@ No 'Access-Control-Allow-Origin' header is present on the requested resource.
 
 To fix:
 CORS Unblock
+
+# To test end of mission msg:
+rostopic pub /move_base_simple/mission_finished std_msgs/Float64 "data: 20.1"

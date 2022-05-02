@@ -3,6 +3,7 @@
 import rospy
 from geometry_msgs.msg import Twist, PoseStamped, Point, Pose, PoseArray
 from nav_msgs.msg import Odometry, Path
+from std_msgs.msg import Float64
 from math import pow, atan2, sqrt, sin, cos, atan, copysign, pi
 import time
 import tf
@@ -46,6 +47,9 @@ class Rover:
 
 		# Desired goal
 		self.goal_publisher = rospy.Publisher('/move_base_simple/current_goal', PoseStamped, queue_size=10)
+
+		# Mission finished
+		self.mission_finished_publisher = rospy.Publisher('/move_base_simple/mission_finished', Float64, queue_size=10)
 
 		# Config server
 		self.dynamic_reconfig_srv = Server(controller_diff_driveConfig, self.callback_dynamic_reconfig)
@@ -257,7 +261,11 @@ class Rover:
 			vel_msg.linear.x = 0
 			vel_msg.angular.z = 0
 			if self.received_path:
-				rospy.loginfo("Path finished!!! in %i min.",round((time.time()- self.start_path_time)/60,2))
+				duration_min = (time.time()- self.start_path_time)/60;
+				rospy.loginfo("Path finished!!! in %i min.",round(duration_min,2))
+				duration_msg = Float64()
+				duration_msg.data = duration_min
+				self.mission_finished_publisher.publish(duration_msg)
 			self.received_path = False
 
 		# Publishing our vel_msg

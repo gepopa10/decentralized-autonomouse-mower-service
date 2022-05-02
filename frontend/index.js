@@ -32,17 +32,27 @@ const initialize = async () => {
 		fixedFrame: '/odom'
 	});
 
-	var listener = new ROSLIB.Topic({
+	var listener_odom = new ROSLIB.Topic({
 		ros: ros,
 		name: '/odom',
 		messageType: 'nav_msgs/Odometry'
 	});
 
-	listener.subscribe(function(message) {
+	listener_odom.subscribe(function(message) {
 		var basePose = new ROSLIB.Pose(message.pose.pose);
 		viewer.cameraControls.center.x = basePose.position.x;
 		viewer.cameraControls.center.y = basePose.position.y;
 		viewer.cameraControls.center.z = basePose.position.z;
+	});
+
+	var listener_mission_finished = new ROSLIB.Topic({
+		ros: ros,
+		name: '/move_base_simple/mission_finished',
+		messageType: 'std_msgs/Float64'
+	});
+
+	listener_mission_finished.subscribe(function(message) {
+		loadingBar.innerHTML = "Mission completed in " + message.data + " minutes"
 	});
 
 	// Add a grid.
