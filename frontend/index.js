@@ -130,7 +130,14 @@ const initialize = async () => {
 		loadingBar.innerHTML = "----> Executing <----"
 	}
 
+	var account_connected = false;
+
 	StartMissionButton.addEventListener('click', () => {
+		if(!account_connected) {
+			loadingBar.innerHTML = "----> Failed! Connect Account! <----"
+			return;
+		}
+
 		printLoadingBar();
 
 		var publish_raw_path_from_fullpath_meters_client = new ROSLIB.Service({
@@ -167,8 +174,14 @@ const initialize = async () => {
 
 	async function getAccount() {
 		const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-		getAccountsResult.innerHTML = accounts[0] || 'Not able to get accounts';
-		account = accounts[0];
+		if(accounts[0]) {
+			getAccountsResult.innerHTML = accounts[0] || 'Not able to get accounts';
+			account = accounts[0];
+			account_connected = true;
+		} else {
+			getAccountsResult.innerHTML = 'Not able to get accounts';
+			account_connected = false;
+		}
 	}
 }
 
