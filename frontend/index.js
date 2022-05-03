@@ -1,3 +1,4 @@
+const getAccountsResult = document.getElementById('getAccountsResult');
 const ethereumButton = document.getElementById('connectWallet');
 const StartMissionButton = document.getElementById('StartMission');
 const loadingBar = document.getElementById('loadingBar');
@@ -152,6 +153,23 @@ const initialize = async () => {
 
 	});
 
+	web3 = new Web3(web3.currentProvider);
+
+	let robotContractInstance
+	robotContractInstance = new web3.eth.Contract(abi, contractAddress);
+
+	let account
+
+	ethereumButton.addEventListener('click', () => {
+		//Will Start the metamask extension
+		getAccount();
+	});
+
+	async function getAccount() {
+		const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+		getAccountsResult.innerHTML = accounts[0] || 'Not able to get accounts';
+		account = accounts[0];
+	}
 }
 
 window.addEventListener('DOMContentLoaded', initialize)
