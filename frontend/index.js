@@ -130,14 +130,26 @@ const initialize = async () => {
 		loadingBar.innerHTML = "----> Executing <----"
 	}
 
+
+
 	var account_connected = false;
 
-	StartMissionButton.addEventListener('click', () => {
+	StartMissionButton.addEventListener('click', async () => {
 		if(!account_connected) {
 			loadingBar.innerHTML = "----> Failed! Connect Account! <----"
 			return;
 		}
 
+		var error = await sendTransaction();
+
+		if(error) {
+			loadingBar.innerHTML = "----> Transaction failed! <----"
+			return;
+		} else {
+			loadingBar.innerHTML = "----> Transaction succeed! <----"
+		}
+
+		await sleep(500);
 		printLoadingBar();
 
 		var publish_raw_path_from_fullpath_meters_client = new ROSLIB.Service({
@@ -182,6 +194,26 @@ const initialize = async () => {
 			getAccountsResult.innerHTML = 'Not able to get accounts';
 			account_connected = false;
 		}
+	}
+
+	const price = '0.0099';
+
+	async function sendTransaction() {
+		var failed = true;
+		await robotContractInstance.methods.start_mission().send({ from: account, value: web3.utils.toWei(price, 'ether'), gas: 1000000 },
+			(error, result) => {
+
+				if(!error) {
+					console.log(result);
+					failed = false;
+				} else {
+					console.log("we have an error", error)
+					console.log(error);
+				}
+			}).catch(err => {
+			console.log(err);
+		});
+		return failed;
 	}
 }
 
