@@ -1,0 +1,11 @@
+networks:
+  default: kovan
+dotenv: .env
+wallets: 
+  from_key: ${PRIVATE_KEY}
+compiler:
+  solc:
+    remappings:
+      - "@chainlink=smartcontractkit/chainlink-brownie-contracts@0.4.0"
+dependencies:
+  - smartcontractkit/chainlink-brownie-contracts@0.4.0
