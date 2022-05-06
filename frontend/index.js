@@ -78,7 +78,7 @@ const initialize = async () => {
 	var urdfClient = new ROS3D.UrdfClient({
 		ros: ros,
 		tfClient: tfClient,
-		path: 'http://localhost:80/',
+		path: 'https://bafybeia3httvdwijmbvbc2pgqibqebiya34ls3hczitfxs7a7ed7nx3o6y.ipfs.dweb.link/',
 		rootObject: viewer.scene,
 		loader: ROS3D.COLLADA_LOADER
 	});
