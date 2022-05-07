@@ -8,7 +8,7 @@ const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
 const initialize = async () => {
 
 	var ros = new ROSLIB.Ros({
-		url: 'ws://localhost:9091'
+		url: 'ws://4.tcp.ngrok.io:17985'
 	});
 
 	ros.on('connection', function() {
@@ -135,19 +135,19 @@ const initialize = async () => {
 	var account_connected = false;
 
 	StartMissionButton.addEventListener('click', async () => {
-		if(!account_connected) {
-			loadingBar.innerHTML = "----> Failed! Connect Account! <----"
-			return;
-		}
+		// if(!account_connected) {
+		// 	loadingBar.innerHTML = "----> Failed! Connect Account! <----"
+		// 	return;
+		// }
 
-		var error = await sendTransaction();
-
-		if(error) {
-			loadingBar.innerHTML = "----> Transaction failed! <----"
-			return;
-		} else {
-			loadingBar.innerHTML = "----> Transaction succeed! <----"
-		}
+		// var error = await sendTransaction();
+		//
+		// if(error) {
+		// 	loadingBar.innerHTML = "----> Transaction failed! <----"
+		// 	return;
+		// } else {
+		// 	loadingBar.innerHTML = "----> Transaction succeed! <----"
+		// }
 
 		await sleep(500);
 		printLoadingBar();

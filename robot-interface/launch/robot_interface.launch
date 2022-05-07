@@ -1,7 +1,0 @@
-<launch>
-	<arg name="odometry_topic" default="/mobile_base_controller/odom" />
-
-	<node name="robot_interface_server" pkg="robot_interface" type="server_flask_app.py" output="screen">
-    <remap from="/odom" to="$(arg odometry_topic)"/>
-  </node>
-</launch>

@@ -1,0 +1,5 @@
+string addr
+string proto
+string name
+---
+string public_url

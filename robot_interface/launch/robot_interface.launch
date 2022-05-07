@@ -1,7 +1,9 @@
 <launch>
 	<arg name="odometry_topic" default="/mobile_base_controller/odom" />
+	<arg name="flask_app_server_port" default="3000" />
 
 	<node name="robot_interface_server" pkg="robot_interface" type="server_flask_app.py" output="screen">
     <remap from="/odom" to="$(arg odometry_topic)"/>
+		<param name="flask_app_server_port" value="$(arg flask_app_server_port)" type="int" />
   </node>
 </launch>

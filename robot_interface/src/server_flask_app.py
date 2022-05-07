@@ -20,6 +20,7 @@ Thread(target=lambda: rospy.init_node('robot_interface', disable_signals=True)).
 
 # A subscriber to Odometry which is called when a message is received
 odom_subscriber = rospy.Subscriber("/odom", Odometry, update_odom)
+flask_app_server_port = rospy.get_param('/flask_app_server_port', 3000)
 
 app = Flask(__name__)
 
@@ -32,7 +33,7 @@ def get_odom():
 
 if __name__ == '__main__':
     try:
-        app.run(debug=True, host='0.0.0.0', port='3000', threaded=True)
+        app.run(debug=True, host='0.0.0.0', port=flask_app_server_port, threaded=True)
         # If we press control + C, the node will stop.
         rospy.spin()
     except rospy.ROSInterruptException:

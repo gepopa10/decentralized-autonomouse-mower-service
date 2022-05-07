@@ -1,0 +1,7 @@
+<launch>
+  <arg name="rosbridge_server_port" default="9090"/>
+
+	<node name="ngrok_rosbridge_interface" pkg="ngrok_rosbridge_interface" type="ngrok_rosbridge_query_and_launch.py" output="screen">
+		<param name="rosbridge_server_port" value="$(arg rosbridge_server_port)" type="int" />
+  </node>
+</launch>

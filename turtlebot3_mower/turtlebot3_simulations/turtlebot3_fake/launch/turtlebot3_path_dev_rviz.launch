@@ -9,6 +9,8 @@
   <param name="ini_yaw" value="0.0"/>
   <arg name="position_noise" default="0.0"/>
   <arg name="theta_noise" default="0.0"/>
+  <arg name="rosbridge_server_port" default="9090"/>
+  <arg name="flask_app_server_port" default="3000"/>
 
   <!-- Position when testing smaller trajs -->
   <!-- <param name="ini_pos_x" value="0"/>
@@ -49,17 +51,20 @@
   <!-- publish a path from an input txt file service -->
   <node pkg="boustrophedon_optimal_path_planner" type="publish_raw_path_from_fullpath_meters.py" name="publish_raw_path_from_fullpath_meters.py" output="screen"/>
 
-  <!-- WebSocket -->
-  <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch">
-    <arg name="port" default="9091" />
-    <arg name="address" default="0.0.0.0" />
+  <!-- NGROK Bridge -->
+  <node name="ngrok_ros" pkg="ngrok_ros" type="ngrok_ros_bridge.py" output="screen"/>
+
+  <!-- NGROK rosbridge interface -->
+  <include file="$(find ngrok_rosbridge_interface)/launch/ngrok_rosbridge_interface.launch">
+    <arg name="rosbridge_server_port" default="$(arg rosbridge_server_port)" />
   </include>
 
   <node name="tf2_web_republisher" pkg="tf2_web_republisher" type="tf2_web_republisher" output="screen"/>
 
   <!-- Robot interface server -->
-  <include file="$(find robot_interface)/launch/robot_interface.launch">
+  <!-- <include file="$(find robot_interface)/launch/robot_interface.launch">
     <arg name="odometry_topic" default="/odom" />
-  </include>
+    <arg name="flask_app_server_port" default="$(arg flask_app_server_port)" />
+  </include> -->
 
 </launch>
