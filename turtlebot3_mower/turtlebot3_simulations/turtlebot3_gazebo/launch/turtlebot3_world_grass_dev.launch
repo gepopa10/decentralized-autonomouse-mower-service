@@ -75,7 +75,7 @@
   </include>
 
   <!-- publish a path from an input txt file service -->
-  <node pkg="boustrophedon_optimal_path_planner" type="publish_raw_path_from_fullpath_meters.py" name="publish_raw_path_from_fullpath_meters.py" output="screen"/>
+  <node name="publish_raw_path_from_fullpath_meters" pkg="boustrophedon_optimal_path_planner" type="publish_raw_path_from_fullpath_meters.py"  output="screen"/>
 
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find turtlebot3_fake)/rviz/turtlebot3_fake.rviz" launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' "/>
   <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
