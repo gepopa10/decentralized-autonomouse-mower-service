@@ -11,6 +11,7 @@
   <arg name="theta_noise" default="0.0"/>
   <arg name="rosbridge_server_port" default="9090"/>
   <arg name="flask_app_server_port" default="3000"/>
+  <arg name="robot_url_param_name" default="/robot_url"/>
 
   <!-- Position when testing smaller trajs -->
   <!-- <param name="ini_pos_x" value="0"/>
@@ -57,14 +58,16 @@
   <!-- NGROK rosbridge interface -->
   <include file="$(find ngrok_rosbridge_interface)/launch/ngrok_rosbridge_interface.launch">
     <arg name="rosbridge_server_port" default="$(arg rosbridge_server_port)" />
+    <arg name="robot_url_param_name" default="$(arg robot_url_param_name)" />
   </include>
 
   <node name="tf2_web_republisher" pkg="tf2_web_republisher" type="tf2_web_republisher" output="screen"/>
 
   <!-- Robot interface server -->
-  <!-- <include file="$(find robot_interface)/launch/robot_interface.launch">
+  <include file="$(find robot_interface)/launch/robot_interface.launch">
     <arg name="odometry_topic" default="/odom" />
     <arg name="flask_app_server_port" default="$(arg flask_app_server_port)" />
-  </include> -->
+    <arg name="robot_url_param_name" default="$(arg robot_url_param_name)" />
+  </include>
 
 </launch>

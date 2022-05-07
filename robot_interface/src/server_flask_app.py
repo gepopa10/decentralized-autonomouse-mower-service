@@ -24,11 +24,19 @@ flask_app_server_port = rospy.get_param('/flask_app_server_port', 3000)
 
 app = Flask(__name__)
 
+
 @app.route('/get_odom', methods = ['GET'])
 def get_odom():
     global odom
     json_str = json_message_converter.convert_ros_message_to_json(odom)
     return json_str
+
+
+@app.route('/get_robot_url', methods = ['GET'])
+def get_robot_url():
+    robot_url_param_name = rospy.get_param('/robot_url_param_name', '/robot_url')
+    robot_url = rospy.get_param(robot_url_param_name, 'localhost:17777')
+    return jsonify(robot_url)
 
 
 if __name__ == '__main__':

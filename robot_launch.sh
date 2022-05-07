@@ -7,6 +7,10 @@ function ctrl_c() {
   echo "Stopping background ngrok process"
   kill -9 $(ps -ef | grep 'ngrok' | grep -v 'grep' | awk '{print $2}')
   echo "ngrok stopped"
+  echo "Killing flask port"
+  flask_port=3000
+  fuser -k ${flask_port}/tcp
+  echo "Flask port $flask_port killed"
 }
 
 # launch ngrok in a terminal

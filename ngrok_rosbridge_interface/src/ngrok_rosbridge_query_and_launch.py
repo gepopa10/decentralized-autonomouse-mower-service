@@ -17,14 +17,18 @@ if __name__ == '__main__':
 
     rospy.init_node('ngrok_rosbridge_query_and_launch', anonymous=True)
     rosbridge_server_port = rospy.get_param('/rosbridge_server_port', 9090)
+    robot_url_param_name = rospy.get_param('/robot_url_param_name', '/robot_url')
 
     raw_url = request_ngrok_url(rosbridge_server_port)
+
     rospy.loginfo("NGROK url is " + raw_url)
 
     host = urlparse(raw_url)
 
     hostname = host.hostname
     port = host.port
+
+    rospy.set_param(robot_url_param_name, hostname + ':' + str(port))
 
     uuid = roslaunch.rlutil.get_or_generate_uuid(None, False)
     roslaunch.configure_logging(uuid)
