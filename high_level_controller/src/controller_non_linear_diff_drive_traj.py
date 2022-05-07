@@ -104,7 +104,7 @@ class Rover:
 				dt = (data.header.stamp - self.noisy_odom.header.stamp).to_sec() # first will be a big number
 				break
 			except:
-				sleep(0.05) # give time for self.noisy_odom object to be created
+				time.sleep(0.05) # give time for self.noisy_odom object to be created
 
 		if (dt <= 0.1 and not self.initialized_controller):
 			self.dt = dt
