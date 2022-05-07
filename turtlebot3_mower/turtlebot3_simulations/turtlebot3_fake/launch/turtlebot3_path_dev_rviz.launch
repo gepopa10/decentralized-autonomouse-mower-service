@@ -57,4 +57,9 @@
 
   <node name="tf2_web_republisher" pkg="tf2_web_republisher" type="tf2_web_republisher" output="screen"/>
 
+  <!-- Robot interface server -->
+  <include file="$(find robot_interface)/launch/robot_interface.launch">
+    <arg name="odometry_topic" default="/odom" />
+  </include>
+
 </launch>

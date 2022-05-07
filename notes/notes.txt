@@ -25,3 +25,7 @@ rostopic pub /move_base_simple/mission_finished std_msgs/Float64 "data: 20.1"
 
 # Use ngrok
 ngrok config add-authtoken 28cpdZvkW8hOGJe5bZX6xmfe8Vi_6Xc3xdb6e8i3XZ5YHfexp
+
+# Rest-Api commands
+curl localhost:3000/ -d '{"foo": "bar"}' -H 'Content-Type: application/json'
+curl http://0.0.0.0:3000/get_odom
