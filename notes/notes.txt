@@ -29,3 +29,16 @@ ngrok config add-authtoken 28cpdZvkW8hOGJe5bZX6xmfe8Vi_6Xc3xdb6e8i3XZ5YHfexp
 # Rest-Api commands
 curl localhost:3000/ -d '{"foo": "bar"}' -H 'Content-Type: application/json'
 curl http://0.0.0.0:3000/get_odom
+
+# NGROK robot interface
+Launch ngrok tcp 22 on the robot.
+
+rosrun ngrok_ros ngrok_ros_bridge.py
+
+rosservice call /ngrok_ros/start_tunnel "addr: '9090'
+proto: 'tcp'
+name: 'ros_bridge'"
+
+To run frontend:
+cd ~/ros_ws/src/decentralized-autonomous-mower-service/frontend && \
+python3 -m http.server 8080
