@@ -1,6 +1,6 @@
 <launch>
 	<arg name="odometry_topic" default="/mobile_base_controller/odom" />
-	<arg name="flask_app_server_port" default="3000" />
+	<arg name="flask_app_server_port" default="3001" />
 	<arg name="robot_url_param_name" default="/robot_url"/>
 
 	<node name="robot_interface_server" pkg="robot_interface" type="server_flask_app.py" output="screen">

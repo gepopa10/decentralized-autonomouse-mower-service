@@ -30,7 +30,11 @@ if __name__ == '__main__':
     hostname = host.hostname
     port = host.port
 
-    rospy.set_param(robot_url_param_name, hostname + ':' + str(port))
+    try:
+        rospy.set_param(robot_url_param_name, hostname + ':' + str(port))
+    except:
+        port = 9000
+        rospy.set_param(robot_url_param_name, "localhost:12700")
 
     uuid = roslaunch.rlutil.get_or_generate_uuid(None, False)
     roslaunch.configure_logging(uuid)
@@ -38,6 +42,8 @@ if __name__ == '__main__':
     certs_path = os.path.dirname(sys.argv[0]) + "/certs"
     cli_args = ['rosbridge_server', 'rosbridge_websocket.launch', 'port:=' + str(rosbridge_server_port), 'websocket_external_port:=' + str(port),
                 'ssl:=true', 'certfile:=' + certs_path + '/server_cert.pem', 'keyfile:=' + certs_path + '/server_key.pem', 'authenticate:=false']
+
+    # cli_args = ['rosbridge_server', 'rosbridge_websocket.launch', 'port:=' + str(rosbridge_server_port)]
     roslaunch_args = cli_args[2:]
     roslaunch_file = [(roslaunch.rlutil.resolve_launch_arguments(cli_args)[0], roslaunch_args)]
     parent = roslaunch.parent.ROSLaunchParent(uuid, roslaunch_file)

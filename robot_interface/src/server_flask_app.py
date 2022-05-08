@@ -34,7 +34,7 @@ def get_odom():
 def get_robot_url():
     robot_url_param_name = rospy.get_param('/robot_url_param_name', '/robot_url')
     robot_url = rospy.get_param(robot_url_param_name, 'localhost:17777')
-    return jsonify(robot_url)
+    return jsonify(robot_url=robot_url)
 
 
 @app.route("/")
@@ -45,7 +45,11 @@ def hello():
 if __name__ == '__main__':
     try:
         flask_app_server_port = rospy.get_param('/robot_interface_server/flask_app_server_port', 6000)
-        app.run(debug=True, host='0.0.0.0', port=flask_app_server_port, threaded=True)
+        app.run(debug=False, host='0.0.0.0', port=flask_app_server_port, threaded=True)
+        # debug=False otherwise there is a bug with ROS
+        # IOError: [Errno 11] Resource temporarily unavailable
+        # See https://github.com/coleifer/micawber/issues/59 where it ways that ran with debug there is a socket issue
+
         # If we press control + C, the node will stop.
         rospy.spin()
     except rospy.ROSInterruptException:

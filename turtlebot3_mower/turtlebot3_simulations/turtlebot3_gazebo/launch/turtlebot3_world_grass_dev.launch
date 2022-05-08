@@ -11,6 +11,9 @@
   <arg name="node_start_delay" default="5.0" />
   <arg name="position_noise" default="0"/>
   <arg name="theta_noise" default="0"/>
+  <arg name="rosbridge_server_port" default="9090"/>
+  <arg name="flask_app_server_port" default="3000"/>
+  <arg name="robot_url_param_name" default="/robot_url"/>
 
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
     <arg name="world_name" value="$(find turtlebot3_gazebo)/worlds/backyard_world_house_fence_uwb.world"/>
@@ -81,4 +84,22 @@
   <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
     <param name="publish_frequency" type="double" value="50.0" />
   </node>
+
+  <!-- NGROK Bridge -->
+  <node name="ngrok_ros" pkg="ngrok_ros" type="ngrok_ros_bridge.py" output="screen"/>
+
+  <!-- NGROK rosbridge interface -->
+  <include file="$(find ngrok_rosbridge_interface)/launch/ngrok_rosbridge_interface.launch">
+    <arg name="rosbridge_server_port" default="$(arg rosbridge_server_port)" />
+    <arg name="robot_url_param_name" default="$(arg robot_url_param_name)" />
+  </include>
+
+  <node name="tf2_web_republisher" pkg="tf2_web_republisher" type="tf2_web_republisher" output="screen"/>
+
+  <!-- Robot interface server -->
+  <include file="$(find robot_interface)/launch/robot_interface.launch">
+    <arg name="odometry_topic" default="/odom" />
+    <arg name="flask_app_server_port" default="$(arg flask_app_server_port)" />
+    <arg name="robot_url_param_name" default="$(arg robot_url_param_name)" />
+  </include>
 </launch>
