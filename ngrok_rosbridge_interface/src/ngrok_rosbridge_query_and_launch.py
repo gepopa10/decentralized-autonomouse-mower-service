@@ -3,6 +3,8 @@ import rospy
 import roslaunch
 from ngrok_ros.srv import StartTunnel
 from urlparse import urlparse
+import os
+import sys
 
 def request_ngrok_url(port):
     rospy.wait_for_service('/ngrok_ros/start_tunnel')
@@ -33,7 +35,9 @@ if __name__ == '__main__':
     uuid = roslaunch.rlutil.get_or_generate_uuid(None, False)
     roslaunch.configure_logging(uuid)
 
-    cli_args = ['rosbridge_server', 'rosbridge_websocket.launch', 'port:=' + str(rosbridge_server_port), 'websocket_external_port:=' + str(port)]
+    certs_path = os.path.dirname(sys.argv[0]) + "/certs"
+    cli_args = ['rosbridge_server', 'rosbridge_websocket.launch', 'port:=' + str(rosbridge_server_port), 'websocket_external_port:=' + str(port),
+                'ssl:=true', 'certfile:=' + certs_path + '/server_cert.pem', 'keyfile:=' + certs_path + '/server_key.pem', 'authenticate:=false']
     roslaunch_args = cli_args[2:]
     roslaunch_file = [(roslaunch.rlutil.resolve_launch_arguments(cli_args)[0], roslaunch_args)]
     parent = roslaunch.parent.ROSLaunchParent(uuid, roslaunch_file)

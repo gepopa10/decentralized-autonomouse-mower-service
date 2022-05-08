@@ -8,7 +8,7 @@ const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
 const initialize = async () => {
 
 	var ros = new ROSLIB.Ros({
-		url: 'ws://4.tcp.ngrok.io:17985'
+		url: 'wss://6.tcp.ngrok.io:14530'
 	});
 
 	ros.on('connection', function() {

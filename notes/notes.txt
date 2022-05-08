@@ -43,3 +43,6 @@ name: 'ros_bridge'"
 To run frontend:
 cd ~/ros_ws/src/decentralized-autonomous-mower-service/frontend && \
 python3 -m http.server 8080
+
+# To generate certificates for https:
+openssl req -new -x509 -keyout localhost.pem -out localhost.pem -days 365 -nodes
