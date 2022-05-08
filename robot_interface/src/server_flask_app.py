@@ -37,6 +37,11 @@ def get_robot_url():
     return jsonify(robot_url)
 
 
+@app.route("/")
+def hello():
+    return jsonify("Chainlink Robot API")
+
+
 if __name__ == '__main__':
     try:
         flask_app_server_port = rospy.get_param('/robot_interface_server/flask_app_server_port', 6000)

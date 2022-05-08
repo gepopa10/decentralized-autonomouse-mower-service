@@ -28,8 +28,9 @@ ngrok config add-authtoken 28cpdZvkW8hOGJe5bZX6xmfe8Vi_6Xc3xdb6e8i3XZ5YHfexp
 
 # Rest-Api commands
 curl localhost:3000/ -d '{"foo": "bar"}' -H 'Content-Type: application/json'
-curl http://0.0.0.0:3000/get_odom
-curl http://0.0.0.0:3000/get_robot_url
+curl http://0.0.0.0:3001/get_odom
+curl http://0.0.0.0:3001/get_robot_url
+curl http://chainlink-robot.diode.link:3001/get_robot_url
 
 # NGROK robot interface
 Launch ngrok tcp 22 on the robot.

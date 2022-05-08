@@ -17,7 +17,7 @@ function ctrl_c() {
 }
 
 # launch ngrok in a terminal
-/bin/sh -ec "python3 ./https.py --address=${address} --port=${port} &" #diode subdomain innacessible via https
-# /bin/sh -ec "python3 -m http.server ${port} &"
+# /bin/sh -ec "python3 ./https.py --address=${address} --port=${port} &" #diode subdomain innacessible via https
+/bin/sh -ec "python3 -m http.server ${port} &"
 # launch robot system in another terminal
 /bin/sh -ec "diode publish -public ${port}:80"
