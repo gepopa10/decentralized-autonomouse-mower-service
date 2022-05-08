@@ -27,7 +27,7 @@ app = Flask(__name__)
 def get_odom():
     global odom
     json_str = json_message_converter.convert_ros_message_to_json(odom)
-    return json_str
+    return jsonify(odometry=json_str)
 
 
 @app.route('/get_robot_url', methods = ['GET'])
