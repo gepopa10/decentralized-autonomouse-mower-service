@@ -1,9 +1,0 @@
-<launch>
-  <arg name="rosbridge_server_port" default="9090"/>
-  <arg name="robot_url_param_name" default="/robot_url"/>
-
-	<node name="ngrok_rosbridge_interface" pkg="ngrok_rosbridge_interface" type="ngrok_rosbridge_query_and_launch.py" output="screen">
-		<param name="rosbridge_server_port" value="$(arg rosbridge_server_port)" type="int" />
-    <param name="robot_url_param_name" value="$(arg robot_url_param_name)" type="string" />
-  </node>
-</launch>

@@ -12,6 +12,8 @@
   <arg name="rosbridge_server_port" default="9090"/>
   <arg name="flask_app_server_port" default="3000"/>
   <arg name="robot_url_param_name" default="/robot_url"/>
+  <arg name="web_rosbridge_external_address" default="localhost"/>
+  <arg name="web_rosbridge_external_port" default="8100"/>
 
   <!-- Position when testing smaller trajs -->
   <!-- <param name="ini_pos_x" value="0"/>
@@ -52,13 +54,12 @@
   <!-- publish a path from an input txt file service -->
   <node name="publish_raw_path_from_fullpath_meters" pkg="boustrophedon_optimal_path_planner" type="publish_raw_path_from_fullpath_meters.py"  output="screen"/>
 
-  <!-- NGROK Bridge -->
-  <node name="ngrok_ros" pkg="ngrok_ros" type="ngrok_ros_bridge.py" output="screen"/>
-
-  <!-- NGROK rosbridge interface -->
-  <include file="$(find ngrok_rosbridge_interface)/launch/ngrok_rosbridge_interface.launch">
+  <!-- WEB rosbridge interface -->
+  <include file="$(find web_rosbridge_interface)/launch/web_rosbridge_interface.launch">
     <arg name="rosbridge_server_port" default="$(arg rosbridge_server_port)" />
     <arg name="robot_url_param_name" default="$(arg robot_url_param_name)" />
+    <arg name="web_rosbridge_external_address" default="$(arg web_rosbridge_external_address)" />
+    <arg name="web_rosbridge_external_port" default="$(arg web_rosbridge_external_port)" />
   </include>
 
   <node name="tf2_web_republisher" pkg="tf2_web_republisher" type="tf2_web_republisher" output="screen"/>

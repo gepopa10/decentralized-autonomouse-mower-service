@@ -8,7 +8,7 @@ const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
 const initialize = async () => {
 
 	var ros = new ROSLIB.Ros({
-		url: 'wss://6.tcp.ngrok.io:14530'
+		url: 'wss://chainlink-robot.diode.link:8100'
 	});
 
 	ros.on('connection', function() {
@@ -17,6 +17,7 @@ const initialize = async () => {
 
 	ros.on('error', function(error) {
 		console.log('Error connecting to websocket server: ', error);
+		document.getElementById('error').style.display = 'inline';
 	});
 
 	ros.on('close', function() {

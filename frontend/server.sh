@@ -24,6 +24,8 @@ function ctrl_c() {
   echo "https stopped"
 }
 
-# http server
+# https server
 # /bin/sh -ec "python3 ./https.py --address=${address} --port=${port} &" #diode subdomain innacessible via https
+
+# http server
 /bin/sh -ec "python3 -m http.server ${port} &"

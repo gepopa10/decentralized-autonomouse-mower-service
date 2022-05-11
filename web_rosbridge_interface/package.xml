@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>ngrok_rosbridge_interface</name>
+  <name>web_rosbridge_interface</name>
   <version>0.0.0</version>
-  <description>The rosbridge server launcher from ngrok port</description>
+  <description>The rosbridge server launcher from web port</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->

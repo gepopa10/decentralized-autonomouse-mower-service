@@ -1,0 +1,13 @@
+<launch>
+  <arg name="rosbridge_server_port" default="9090"/>
+  <arg name="robot_url_param_name" default="/robot_url"/>
+  <arg name="web_rosbridge_external_address" default="localhost"/>
+  <arg name="web_rosbridge_external_port" default="8100"/>
+
+	<node name="web_rosbridge_interface" pkg="web_rosbridge_interface" type="web_rosbridge_query_and_launch.py" output="screen">
+		<param name="rosbridge_server_port" value="$(arg rosbridge_server_port)" type="int" />
+    <param name="robot_url_param_name" value="$(arg robot_url_param_name)" type="string" />
+    <param name="web_rosbridge_external_address" value="$(arg web_rosbridge_external_address)" type="string" />
+    <param name="web_rosbridge_external_port" value="$(arg web_rosbridge_external_port)" type="int" />
+  </node>
+</launch>
