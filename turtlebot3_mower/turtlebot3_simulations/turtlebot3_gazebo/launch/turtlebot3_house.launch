@@ -19,6 +19,6 @@
   <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model turtlebot3 -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -param robot_description" />
 
   <!--rosparam file="$(find turtlebot3_description)/config/diff_drive.yaml" command="load" />
-    
-  <node name="humanitas_controller_manager" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="mobile_base_controller" /-->
+
+  <node name="controller_manager" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="mobile_base_controller" /-->
 </launch>

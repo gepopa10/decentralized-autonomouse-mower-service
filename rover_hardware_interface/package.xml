@@ -2,7 +2,7 @@
 <package>
   <name>rover_hardware_interface</name>
   <version>0.0.1</version>
-  <description>Provides the hardware definition and interfaces for Humanitas Rover</description>
+  <description>Provides the hardware definition and interfaces for Rover</description>
 
   <maintainer email="gpopmescu@gmail.com">George Popescu</maintainer>
 
