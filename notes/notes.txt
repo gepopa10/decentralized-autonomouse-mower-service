@@ -50,3 +50,6 @@ openssl req -new -x509 -keyout localhost.pem -out localhost.pem -days 365 -nodes
 
 # Check open ports
 netstat -tulpn | grep LISTEN
+
+# View rostopic camera
+rosrun image_view image_view image:=/camera/rgb/image_raw
