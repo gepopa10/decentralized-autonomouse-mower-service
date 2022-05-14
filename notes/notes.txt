@@ -55,3 +55,8 @@ netstat -tulpn | grep LISTEN
 rosrun image_view image_view image:=/camera/rgb/image_raw
 rosrun image_view image_saver image:=/camera/rgb/image_raw _save_all_image:=false _filename_format:=/home/gepopa/ros_ws/src/decentralized-autonomous-mower-service/camera/image.jpg __name:=image_saver
 rosservice call /image_saver/save
+
+# Post image on ifps
+curl -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDE0ZDFjYzcyOTJlZmYzMTU5YjQ1MUQ1ZURDRkJFMUJBMkVBN2QzMTkiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY1MjUzMjg3MzA0NCwibmFtZSI6IkNoYWlubGlua1JvYm90In0.EFZXqd1hOicty_qpWo-yv5lZgsC0J6HKC9aCJKF-Pek" -H "Content-Type: image/jpg" --data-binary "@/home/gepopa/Pictures/wallpaper2.jpg" --url "https://api.nft.storage/upload"
+Then you can access file:
+https://{CID}.ipfs.nftstorage.link
