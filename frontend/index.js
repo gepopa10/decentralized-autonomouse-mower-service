@@ -3,27 +3,11 @@ const ethereumButton = document.getElementById('connectWallet');
 const StartMissionButton = document.getElementById('StartMission');
 const loadingBar = document.getElementById('loadingBar');
 const ConnectRobotButton = document.getElementById('ConnectRobot');
+const SnapshotButton = document.getElementById('Snapshot');
 
 const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
 
 const initialize = async () => {
-
-	var ros = new ROSLIB.Ros({
-		url: 'wss://chainlink-robot.diode.link:8100'
-	});
-
-	ros.on('connection', function() {
-		console.log('Connected to websocket server.');
-	});
-
-	ros.on('error', function(error) {
-		console.log('Error connecting to websocket server: ', error);
-		document.getElementById('error').style.display = 'inline';
-	});
-
-	ros.on('close', function() {
-		console.log('Connection to websocket server closed.');
-	});
 
 	// Create the main viewer.
 	var viewer = new ROS3D.Viewer({
@@ -35,29 +19,6 @@ const initialize = async () => {
 		fixedFrame: '/odom'
 	});
 
-	var listener_odom = new ROSLIB.Topic({
-		ros: ros,
-		name: '/odom',
-		messageType: 'nav_msgs/Odometry'
-	});
-
-	listener_odom.subscribe(function(message) {
-		var basePose = new ROSLIB.Pose(message.pose.pose);
-		viewer.cameraControls.center.x = basePose.position.x;
-		viewer.cameraControls.center.y = basePose.position.y;
-		viewer.cameraControls.center.z = basePose.position.z;
-	});
-
-	var listener_mission_finished = new ROSLIB.Topic({
-		ros: ros,
-		name: '/move_base_simple/mission_finished',
-		messageType: 'std_msgs/Float64'
-	});
-
-	listener_mission_finished.subscribe(function(message) {
-		loadingBar.innerHTML = "Mission completed in " + message.data + " minutes"
-	});
-
 	// Add a grid.
 	var grid = new ROS3D.Grid({
 		num_cells: 500,
@@ -67,55 +28,103 @@ const initialize = async () => {
 	});
 	viewer.addObject(grid);
 
-	// Setup a client to listen to TFs.
-	var tfClient = new ROSLIB.TFClient({
-		ros: ros,
-		angularThres: 0.01,
-		transThres: 0.01,
-		rate: 60.0,
-		fixedFrame: '/odom'
-	});
+	let ros;
 
-	// Setup the URDF client.
-	var urdfClient = new ROS3D.UrdfClient({
-		ros: ros,
-		tfClient: tfClient,
-		path: 'https://bafybeia3httvdwijmbvbc2pgqibqebiya34ls3hczitfxs7a7ed7nx3o6y.ipfs.dweb.link/',
-		rootObject: viewer.scene,
-		loader: ROS3D.COLLADA_LOADER
-	});
+	async function connectROS(robot_url) {
+		var url  = "wss://" + robot_url
+		ros = new ROSLIB.Ros({
+			url: url
+		});
 
-	// Setup the marker clients.
-	var markerClientFootprints = new ROS3D.MarkerClient({
-		ros: ros,
-		tfClient: tfClient,
-		topic: '/move_base_simple/marker/footprints',
-		rootObject: viewer.scene
-	});
-	var markerClientPath = new ROS3D.MarkerClient({
-		ros: ros,
-		tfClient: tfClient,
-		topic: '/move_base_simple/marker/path',
-		rootObject: viewer.scene
-	});
-	var markerClientPathRaw = new ROS3D.MarkerClient({
-		ros: ros,
-		tfClient: tfClient,
-		topic: '/move_base_simple/marker/path_raw',
-		rootObject: viewer.scene
-	});
-	var markerClientNextGoals = new ROS3D.MarkerClient({
-		ros: ros,
-		tfClient: tfClient,
-		topic: '/move_base_simple/marker/next_goals',
-		rootObject: viewer.scene
-	});
-	var markerClientPerimeter = new ROS3D.MarkerClient({
-		ros: ros,
-		tfClient: tfClient,
-		topic: '/move_base_simple/marker/perimeter',
-		rootObject: viewer.scene
-	});
+		ros.on('connection', function() {
+			console.log('Connected to websocket server.');
+		});
+
+		ros.on('error', function(error) {
+			console.log('Error connecting to websocket server: ', error);
+			document.getElementById('error').style.display = 'inline';
+		});
+
+		ros.on('close', function() {
+			console.log('Connection to websocket server closed.');
+		});
+
+
+
+		var listener_odom = new ROSLIB.Topic({
+			ros: ros,
+			name: '/odom',
+			messageType: 'nav_msgs/Odometry'
+		});
+
+		listener_odom.subscribe(function(message) {
+			var basePose = new ROSLIB.Pose(message.pose.pose);
+			viewer.cameraControls.center.x = basePose.position.x;
+			viewer.cameraControls.center.y = basePose.position.y;
+			viewer.cameraControls.center.z = basePose.position.z;
+		});
+
+		var listener_mission_finished = new ROSLIB.Topic({
+			ros: ros,
+			name: '/move_base_simple/mission_finished',
+			messageType: 'std_msgs/Float64'
+		});
+
+		listener_mission_finished.subscribe(function(message) {
+			loadingBar.innerHTML = "Mission completed in " + message.data + " minutes"
+		});
+
+		// Setup a client to listen to TFs.
+		var tfClient = new ROSLIB.TFClient({
+			ros: ros,
+			angularThres: 0.01,
+			transThres: 0.01,
+			rate: 60.0,
+			fixedFrame: '/odom'
+		});
+
+		// Setup the URDF client.
+		var urdfClient = new ROS3D.UrdfClient({
+			ros: ros,
+			tfClient: tfClient,
+			path: 'https://bafybeia3httvdwijmbvbc2pgqibqebiya34ls3hczitfxs7a7ed7nx3o6y.ipfs.dweb.link/',
+			rootObject: viewer.scene,
+			loader: ROS3D.COLLADA_LOADER
+		});
+
+		// Setup the marker clients.
+		var markerClientFootprints = new ROS3D.MarkerClient({
+			ros: ros,
+			tfClient: tfClient,
+			topic: '/move_base_simple/marker/footprints',
+			rootObject: viewer.scene
+		});
+		var markerClientPath = new ROS3D.MarkerClient({
+			ros: ros,
+			tfClient: tfClient,
+			topic: '/move_base_simple/marker/path',
+			rootObject: viewer.scene
+		});
+		var markerClientPathRaw = new ROS3D.MarkerClient({
+			ros: ros,
+			tfClient: tfClient,
+			topic: '/move_base_simple/marker/path_raw',
+			rootObject: viewer.scene
+		});
+		var markerClientNextGoals = new ROS3D.MarkerClient({
+			ros: ros,
+			tfClient: tfClient,
+			topic: '/move_base_simple/marker/next_goals',
+			rootObject: viewer.scene
+		});
+		var markerClientPerimeter = new ROS3D.MarkerClient({
+			ros: ros,
+			tfClient: tfClient,
+			topic: '/move_base_simple/marker/perimeter',
+			rootObject: viewer.scene
+		});
+
+	}
 
 	async function printLoadingBar() {
 		var template = "Working: "
@@ -131,8 +140,6 @@ const initialize = async () => {
 
 		loadingBar.innerHTML = "----> Executing <----"
 	}
-
-
 
 	var account_connected = false;
 
@@ -192,9 +199,12 @@ const initialize = async () => {
 			}).on("error", console.error);
 
 		while(typeof robot_url_struct == 'undefined') {
-			loadingBar.innerHTML = "----> Waiting to receive confirmation.... <----"
+
+			loadingBar.innerHTML = "----> Waiting to receive confirmation... <----"
 			await sleep(500);
-			printLoadingBar();
+			let robot_url = await robotContractInstanceAdapter.robot_url();
+			loadingBar.innerHTML = "Robot Url : " + robot_url
+			await sleep(500);
 		}
 
 		if(error) {
@@ -203,6 +213,9 @@ const initialize = async () => {
 		} else {
 			loadingBar.innerHTML = "----> Connection to robot succeed! <----"
 		}
+
+		//"chainlink-robot.diode.link:8100"
+		await connectROS(robot_url_struct.robot_url);
 
 		await sleep(1000);
 
@@ -272,6 +285,47 @@ const initialize = async () => {
 			console.log(err);
 		});
 		return failed;
+	}
+
+	SnapshotButton.addEventListener('click', async () => {
+		if(!account_connected) {
+			loadingBar.innerHTML = "----> Failed! Connect Account! <----"
+			return;
+		}
+
+		await addToken();
+	});
+
+	async function addToken() {
+		const tokenImage = 'https://bafybeiag6nubujmybqwwc2gl6v233ii6g2ge5my4etat5urc7yfgtzz6au.ipfs.nftstorage.link/';
+		const txt = await mintToken(tokenImage).then(notify)
+	}
+
+	async function mintToken(_uri) {
+		const encodedFunction = web3.eth.abi.encodeFunctionCall({
+			name: "mintToken",
+			type: "function",
+			inputs: [{
+				type: 'string',
+				name: 'tokenURI'
+			}]
+		}, [_uri]);
+
+		const transactionParameters = {
+			to: nftContractAddress,
+			from: account,
+			data: encodedFunction
+		};
+		const txt = await ethereum.request({
+			method: 'eth_sendTransaction',
+			params: [transactionParameters]
+		});
+		return txt
+	}
+
+	async function notify(_txt) {
+		document.getElementById("resultSpace").innerHTML =
+			`<input disabled = "true" id="result" type="text" class="form-control" placeholder="Description" aria-label="URL" aria-describedby="basic-addon1" value="Your NFT was minted in transaction ${_txt}">`;
 	}
 }
 

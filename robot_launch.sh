@@ -31,7 +31,6 @@ function ctrl_c() {
 # -----------------------------------------------------------------------------
 # RVIZ
 # -----------------------------------------------------------------------------
-# launch robot system in another terminal
 # /bin/sh -ec "roslaunch turtlebot3_fake turtlebot3_path_dev_rviz.launch \
 # flask_app_server_port:=${flask_port} \
 # web_rosbridge_external_address:=${web_rosbridge_external_address} \

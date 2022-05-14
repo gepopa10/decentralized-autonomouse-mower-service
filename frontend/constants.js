@@ -176,3 +176,5 @@ const abiAdapter = [{
 		"type": "function"
 	}
 ]
+
+const nftContractAddress = "0xacD1B3753b36b0D10D75f85f381629429823490E"
