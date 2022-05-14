@@ -6,6 +6,7 @@ from flask import Flask, jsonify
 from nav_msgs.msg import Odometry
 from std_srvs.srv import Empty
 from rospy_message_converter import json_message_converter
+from ifps_image_poster import IFPS_image_poster
 
 odom = Odometry()
 
@@ -25,6 +26,8 @@ odom_subscriber = rospy.Subscriber("/odom", Odometry, update_odom)
 
 app = Flask(__name__)
 
+ifps_poster = IFPS_image_poster()
+
 
 @app.route('/get_odom', methods = ['GET'])
 def get_odom():
@@ -38,7 +41,11 @@ def get_image():
     rospy.wait_for_service('/image_view/save')
     save_service = rospy.ServiceProxy('/image_view/save', Empty)
     save_service()
-    return jsonify(saved = True)
+
+    image_path = rospy.get_param('/image_view/filename_format', '/some/path')
+
+    cid = ifps_poster.post_and_receive_cid(image_path)
+    return jsonify(cid = cid)
 
 
 @app.route('/get_robot_url', methods = ['GET'])
