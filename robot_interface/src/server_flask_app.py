@@ -4,7 +4,7 @@ import rospy
 from threading import Thread
 from flask import Flask, jsonify
 from nav_msgs.msg import Odometry
-from sensor_msgs.msg import Image
+from std_srvs.srv import Empty
 from rospy_message_converter import json_message_converter
 
 odom = Odometry()
@@ -14,12 +14,6 @@ def update_odom(data):
     odom = data
 
 
-image = Image()
-
-def update_image(data):
-    global image
-    image = data
-
 # ROS node, publisher, and parameter.
 # The node is started in a separate thread to avoid conflicts with Flask.
 # The parameter *disable_signals* must be set if node is not initialized
@@ -28,8 +22,6 @@ Thread(target=lambda: rospy.init_node('robot_interface_server', disable_signals=
 
 # A subscriber to Odometry which is called when a message is received
 odom_subscriber = rospy.Subscriber("/odom", Odometry, update_odom)
-# A subscriber to Image which is called when a message is received
-image_subscriber = rospy.Subscriber("/camera/rgb/image_raw", Image, update_image)
 
 app = Flask(__name__)
 
@@ -43,15 +35,10 @@ def get_odom():
 
 @app.route('/get_image', methods = ['GET'])
 def get_image():
-    global image
-    json_str = json_message_converter.convert_ros_message_to_json(image)
-    # print(image.data)
-    # print("len(image.data)", len(image.data))
-    # print("height", image.height)
-    # print("width", image.width)
-    # print("step", image.step)
-    # j = {"data" : image.data}
-    return jsonify(test = [20, 30 ,40])
+    rospy.wait_for_service('/image_view/save')
+    save_service = rospy.ServiceProxy('/image_view/save', Empty)
+    save_service()
+    return jsonify(saved = True)
 
 
 @app.route('/get_robot_url', methods = ['GET'])

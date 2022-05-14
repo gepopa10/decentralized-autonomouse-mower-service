@@ -53,3 +53,5 @@ netstat -tulpn | grep LISTEN
 
 # View rostopic camera
 rosrun image_view image_view image:=/camera/rgb/image_raw
+rosrun image_view image_saver image:=/camera/rgb/image_raw _save_all_image:=false _filename_format:=/home/gepopa/ros_ws/src/decentralized-autonomous-mower-service/camera/image.jpg __name:=image_saver
+rosservice call /image_saver/save

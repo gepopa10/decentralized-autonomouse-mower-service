@@ -2,6 +2,7 @@ const getAccountsResult = document.getElementById('getAccountsResult');
 const ethereumButton = document.getElementById('connectWallet');
 const StartMissionButton = document.getElementById('StartMission');
 const loadingBar = document.getElementById('loadingBar');
+const ConnectRobotButton = document.getElementById('ConnectRobot');
 
 const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
 
@@ -136,19 +137,19 @@ const initialize = async () => {
 	var account_connected = false;
 
 	StartMissionButton.addEventListener('click', async () => {
-		// if(!account_connected) {
-		// 	loadingBar.innerHTML = "----> Failed! Connect Account! <----"
-		// 	return;
-		// }
+		if(!account_connected) {
+			loadingBar.innerHTML = "----> Failed! Connect Account! <----"
+			return;
+		}
 
-		// var error = await sendTransaction();
-		//
-		// if(error) {
-		// 	loadingBar.innerHTML = "----> Transaction failed! <----"
-		// 	return;
-		// } else {
-		// 	loadingBar.innerHTML = "----> Transaction succeed! <----"
-		// }
+		var error = await sendTransaction();
+
+		if(error) {
+			loadingBar.innerHTML = "----> Transaction failed! <----"
+			return;
+		} else {
+			loadingBar.innerHTML = "----> Transaction succeed! <----"
+		}
 
 		await sleep(500);
 		printLoadingBar();
@@ -173,10 +174,48 @@ const initialize = async () => {
 
 	});
 
+
+	let robot_url_struct
+
+	ConnectRobotButton.addEventListener('click', async () => {
+		if(!account_connected) {
+			loadingBar.innerHTML = "----> Failed! Connect Account! <----"
+			return;
+		}
+
+		var error = await requestRobotUrl();
+
+		var res = await robotContractInstanceAdapter.events.RobotUrlRequestFulfilled()
+			.on("data", function(event) {
+				robot_url_struct = event.returnValues;
+				console.log("Got robot url :", robot_url_struct.robot_url);
+			}).on("error", console.error);
+
+		while(typeof robot_url_struct == 'undefined') {
+			loadingBar.innerHTML = "----> Waiting to receive confirmation.... <----"
+			await sleep(500);
+			printLoadingBar();
+		}
+
+		if(error) {
+			loadingBar.innerHTML = "----> Connection to robot failed! <----"
+			return;
+		} else {
+			loadingBar.innerHTML = "----> Connection to robot succeed! <----"
+		}
+
+		await sleep(1000);
+
+		loadingBar.innerHTML = "Connected to robot: " + robot_url_struct.robot_url
+	});
+
 	web3 = new Web3(web3.currentProvider);
 
 	let robotContractInstance
 	robotContractInstance = new web3.eth.Contract(abi, contractAddress);
+
+	let robotContractInstanceAdapter
+	robotContractInstanceAdapter = new web3.eth.Contract(abiAdapter, contractAddressAdapter);
 
 	let account
 
@@ -202,6 +241,24 @@ const initialize = async () => {
 	async function sendTransaction() {
 		var failed = true;
 		await robotContractInstance.methods.start_mission().send({ from: account, value: web3.utils.toWei(price, 'ether'), gas: 1000000 },
+			(error, result) => {
+
+				if(!error) {
+					console.log(result);
+					failed = false;
+				} else {
+					console.log("we have an error", error)
+					console.log(error);
+				}
+			}).catch(err => {
+			console.log(err);
+		});
+		return failed;
+	}
+
+	async function requestRobotUrl() {
+		var failed = true;
+		await robotContractInstanceAdapter.methods.requestBytes().send({ from: account, gas: 1000000 },
 			(error, result) => {
 
 				if(!error) {
