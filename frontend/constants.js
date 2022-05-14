@@ -43,7 +43,7 @@ const abi = [{
 	}
 ]
 
-const contractAddressAdapter = "0xacD1B3753b36b0D10D75f85f381629429823490E"
+const contractAddressAdapter = "0x5C5b5320B552f1C0326019c6901DF724D2dc8946"
 const abiAdapter = [{
 		"inputs": [{
 				"internalType": "address",
@@ -159,7 +159,7 @@ const abiAdapter = [{
 	},
 	{
 		"inputs": [],
-		"name": "requestBytes",
+		"name": "requestRobotUrlBytes",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"

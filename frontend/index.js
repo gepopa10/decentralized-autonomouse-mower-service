@@ -31,7 +31,7 @@ const initialize = async () => {
 	let ros;
 
 	async function connectROS(robot_url) {
-		var url  = "wss://" + robot_url
+		var url = "wss://" + robot_url
 		ros = new ROSLIB.Ros({
 			url: url
 		});
@@ -182,7 +182,7 @@ const initialize = async () => {
 	});
 
 
-	let robot_url_struct
+	let robot_url
 
 	ConnectRobotButton.addEventListener('click', async () => {
 		if(!account_connected) {
@@ -192,17 +192,17 @@ const initialize = async () => {
 
 		var error = await requestRobotUrl();
 
-		var res = await robotContractInstanceAdapter.events.RobotUrlRequestFulfilled()
+		robotContractInstanceAdapter.events.RobotUrlRequestFulfilled()
 			.on("data", function(event) {
-				robot_url_struct = event.returnValues;
-				console.log("Got robot url :", robot_url_struct.robot_url);
+				robot_url = event.returnValues.robot_url;
+				console.log("Got robot url from event:", robot_url);
 			}).on("error", console.error);
 
-		while(typeof robot_url_struct == 'undefined') {
+		while((typeof robot_url == 'undefined') || (robot_url == '')) {
 
 			loadingBar.innerHTML = "----> Waiting to receive confirmation... <----"
 			await sleep(500);
-			let robot_url = await robotContractInstanceAdapter.robot_url();
+			robot_url = await robotContractInstanceAdapter.methods.robot_url().call();
 			loadingBar.innerHTML = "Robot Url : " + robot_url
 			await sleep(500);
 		}
@@ -215,11 +215,14 @@ const initialize = async () => {
 		}
 
 		//"chainlink-robot.diode.link:8100"
-		await connectROS(robot_url_struct.robot_url);
+		await connectROS(robot_url);
 
 		await sleep(1000);
 
-		loadingBar.innerHTML = "Connected to robot: " + robot_url_struct.robot_url
+		loadingBar.innerHTML = "Connected to robot: " + robot_url
+
+		ConnectRobotButton.setAttribute("disabled", null);
+		ConnectRobotButton.style.visibility = 'hidden';
 	});
 
 	web3 = new Web3(web3.currentProvider);
@@ -271,7 +274,7 @@ const initialize = async () => {
 
 	async function requestRobotUrl() {
 		var failed = true;
-		await robotContractInstanceAdapter.methods.requestBytes().send({ from: account, gas: 1000000 },
+		await robotContractInstanceAdapter.methods.requestRobotUrlBytes().send({ from: account, gas: 1000000 },
 			(error, result) => {
 
 				if(!error) {
