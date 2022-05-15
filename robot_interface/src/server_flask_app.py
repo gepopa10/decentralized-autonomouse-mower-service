@@ -36,8 +36,8 @@ def get_odom():
     return jsonify(odometry=json_str)
 
 
-@app.route('/get_image', methods = ['GET'])
-def get_image():
+@app.route('/get_robot_image_uri', methods = ['GET'])
+def get_robot_image_uri():
     rospy.wait_for_service('/image_view/save')
     save_service = rospy.ServiceProxy('/image_view/save', Empty)
     save_service()

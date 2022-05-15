@@ -16,6 +16,7 @@
   <arg name="robot_url_param_name" default="/robot_url"/>
   <arg name="web_rosbridge_external_address" default="localhost"/>
   <arg name="web_rosbridge_external_port" default="8100"/>
+  <arg name="image_file" default="/home/gepopa/ros_ws/src/decentralized-autonomous-mower-service/camera/image.jpg"/>
 
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
     <arg name="world_name" value="$(find turtlebot3_gazebo)/worlds/backyard_world_house_fence_uwb.world"/>
@@ -103,4 +104,11 @@
     <arg name="flask_app_server_port" default="$(arg flask_app_server_port)" />
     <arg name="robot_url_param_name" default="$(arg robot_url_param_name)" />
   </include>
+
+  <!-- Image saver -->
+  <node name="image_view" pkg="image_view" type="image_saver" output="screen">
+    <remap from="image" to="/camera/rgb/image_raw"/>
+    <param name="save_all_image" value="false" type="bool" />
+    <param name="filename_format" value="$(arg image_file)" type="string" />
+  </node>
 </launch>

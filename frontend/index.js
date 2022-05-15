@@ -306,13 +306,25 @@ const initialize = async () => {
             loadingBar.innerHTML = "----> Failed! Connect Account! <----"
             return;
         }
+        const tokenImage = 'https://bafybeiag6nubujmybqwwc2gl6v233ii6g2ge5my4etat5urc7yfgtzz6au.ipfs.nftstorage.link/';
 
         await addToken();
     });
 
-    async function addToken() {
-        const tokenImage = 'https://bafybeiag6nubujmybqwwc2gl6v233ii6g2ge5my4etat5urc7yfgtzz6au.ipfs.nftstorage.link/';
+    async function addToken(tokenImage) {
         const txt = await mintToken(tokenImage).then(notify)
+
+        let new_token_id;
+        nftContractInstance.events.token_has_been_minted()
+            .on("data", function(event) {
+                new_token_id = event.returnValues.new_token_id;
+                console.log("New token id:", new_token_id);
+            }).on("error", console.error);
+
+        while ((typeof new_token_id == 'undefined') || (new_token_id == '')) {
+            await sleep(1000);
+        }
+
         const balance = await balanceOfNfts()
         viewNfts(balance)
     }
@@ -353,18 +365,14 @@ const initialize = async () => {
     let nfts = []
 
     async function viewNfts(balance) {
-        for (let i = 0; i < 6; i++) {
-            // const tokenId = await nftContractInstance.methods.tokenOfOwnerByIndex(account, i).call()
-            // let tokenMetadataURI = await nftContractInstance.methods.tokenURI(tokenId).call()
-            // console.log("Token URI is: ", tokenMetadataURI)
-            const url = "https://bafybeiag6nubujmybqwwc2gl6v233ii6g2ge5my4etat5urc7yfgtzz6au.ipfs.nftstorage.link/"
-
+        for (let i = 0; i < balance; i++) {
+            const tokenId = await nftContractInstance.methods.tokenOfOwnerByIndex(account, i).call()
+            let tokenMetadataURI = await nftContractInstance.methods.tokenURI(tokenId).call()
+            console.log("Token URI is: ", tokenMetadataURI)
+            const url = tokenMetadataURI
 
             if (nfts.indexOf(url) > -1) {
-              nfts.push(url)
-              const imageTokenElement = document.getElementById("nft_template").content.cloneNode(true)
-              imageTokenElement.querySelector("img").src = url
-              document.getElementById("nfts").append(imageTokenElement)
+              // already added
             } else {
                 nfts.push(url)
 								const imageTokenElement = document.getElementById("nft_template").content.cloneNode(true)

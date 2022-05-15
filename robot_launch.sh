@@ -40,7 +40,17 @@ function ctrl_c() {
 # -----------------------------------------------------------------------------
 # Gazebo
 # -----------------------------------------------------------------------------
-/bin/sh -ec "roslaunch turtlebot3_gazebo turtlebot3_world_grass_dev_gazebo.launch \
+# /bin/sh -ec "roslaunch turtlebot3_gazebo turtlebot3_world_grass_dev_gazebo.launch \
+# flask_app_server_port:=${flask_port} \
+# web_rosbridge_external_address:=${web_rosbridge_external_address} \
+# web_rosbridge_external_port:=${web_rosbridge_external_port} \
+# rosbridge_server_port:=${rosbridge_port} \
+# image_file:=${image_file}"
+
+# -----------------------------------------------------------------------------
+# Gazebo + RVIZ
+# -----------------------------------------------------------------------------
+/bin/sh -ec "roslaunch turtlebot3_gazebo turtlebot3_world_grass_dev.launch \
 flask_app_server_port:=${flask_port} \
 web_rosbridge_external_address:=${web_rosbridge_external_address} \
 web_rosbridge_external_port:=${web_rosbridge_external_port} \
