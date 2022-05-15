@@ -4,6 +4,7 @@ const StartMissionButton = document.getElementById('StartMission');
 const loadingBar = document.getElementById('loadingBar');
 const ConnectRobotButton = document.getElementById('ConnectRobot');
 const SnapshotButton = document.getElementById('Snapshot');
+const ViewNFTsButton = document.getElementById('ViewNFTs');
 
 const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
 
@@ -93,30 +94,30 @@ const initialize = async () => {
         });
 
         // Setup the marker clients.
-        var markerClientFootprints = new ROS3D.MarkerClient({
-            ros: ros,
-            tfClient: tfClient,
-            topic: '/move_base_simple/marker/footprints',
-            rootObject: viewer.scene
-        });
+        // var markerClientFootprints = new ROS3D.MarkerClient({
+        //     ros: ros,
+        //     tfClient: tfClient,
+        //     topic: '/move_base_simple/marker/footprints',
+        //     rootObject: viewer.scene
+        // });
         var markerClientPath = new ROS3D.MarkerClient({
             ros: ros,
             tfClient: tfClient,
             topic: '/move_base_simple/marker/path',
             rootObject: viewer.scene
         });
-        var markerClientPathRaw = new ROS3D.MarkerClient({
-            ros: ros,
-            tfClient: tfClient,
-            topic: '/move_base_simple/marker/path_raw',
-            rootObject: viewer.scene
-        });
-        var markerClientNextGoals = new ROS3D.MarkerClient({
-            ros: ros,
-            tfClient: tfClient,
-            topic: '/move_base_simple/marker/next_goals',
-            rootObject: viewer.scene
-        });
+        // var markerClientPathRaw = new ROS3D.MarkerClient({
+        //     ros: ros,
+        //     tfClient: tfClient,
+        //     topic: '/move_base_simple/marker/path_raw',
+        //     rootObject: viewer.scene
+        // });
+        // var markerClientNextGoals = new ROS3D.MarkerClient({
+        //     ros: ros,
+        //     tfClient: tfClient,
+        //     topic: '/move_base_simple/marker/next_goals',
+        //     rootObject: viewer.scene
+        // });
         var markerClientPerimeter = new ROS3D.MarkerClient({
             ros: ros,
             tfClient: tfClient,
@@ -343,6 +344,16 @@ const initialize = async () => {
         const tokenImage = 'https://' + robot_image_uri + '.ipfs.nftstorage.link/';
 
         await addToken(tokenImage);
+    });
+
+    ViewNFTsButton.addEventListener('click', async () => {
+        if (!account_connected) {
+            loadingBar.innerHTML = "----> Failed! Connect Account! <----"
+            return;
+        }
+
+        const balance = await balanceOfNfts()
+        viewNfts(balance)
     });
 
     async function addToken(tokenImage) {
