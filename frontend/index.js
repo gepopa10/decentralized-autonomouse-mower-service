@@ -201,10 +201,10 @@ const initialize = async () => {
         while ((typeof robot_url == 'undefined') || (robot_url == '')) {
 
             loadingBar.innerHTML = "----> Waiting to receive confirmation... <----"
-            await sleep(500);
+            await sleep(1000);
             robot_url = await robotContractInstanceAdapter.methods.robot_url().call();
             loadingBar.innerHTML = "Robot Url : " + robot_url
-            await sleep(500);
+            await sleep(1000);
         }
 
         if (error) {
@@ -220,9 +220,6 @@ const initialize = async () => {
         await sleep(1000);
 
         loadingBar.innerHTML = "Connected to robot: " + robot_url
-
-        ConnectRobotButton.setAttribute("disabled", null);
-        ConnectRobotButton.style.visibility = 'hidden';
     });
 
     web3 = new Web3(web3.currentProvider);
@@ -301,14 +298,51 @@ const initialize = async () => {
         return failed;
     }
 
+    async function requestImageUri() {
+        var failed = true;
+        await robotContractInstanceAdapter.methods.requestRobotImageUriBytes().send({
+                from: account,
+                gas: 1000000
+            },
+            (error, result) => {
+
+                if (!error) {
+                    console.log(result);
+                    failed = false;
+                } else {
+                    console.log("we have an error", error)
+                }
+            }).catch(err => {
+            console.log(err);
+        });
+        return failed;
+    }
+
     SnapshotButton.addEventListener('click', async () => {
         if (!account_connected) {
             loadingBar.innerHTML = "----> Failed! Connect Account! <----"
             return;
         }
-        const tokenImage = 'https://bafybeiag6nubujmybqwwc2gl6v233ii6g2ge5my4etat5urc7yfgtzz6au.ipfs.nftstorage.link/';
 
-        await addToken();
+        let robot_image_uri;
+
+        var error = await requestImageUri();
+
+        robotContractInstanceAdapter.events.RobotImageUriRequestFulfilled()
+            .on("data", function(event) {
+                robot_image_uri = event.returnValues.robot_image_uri;
+                console.log("Got image uri:", robot_image_uri);
+            }).on("error", console.error);
+
+        while ((typeof robot_image_uri == 'undefined') || (robot_image_uri == '')) {
+            await sleep(1000);
+            robot_image_uri = await robotContractInstanceAdapter.methods.robot_image_uri().call();
+        }
+
+        // const robot_image_uri = 'bafybeiag6nubujmybqwwc2gl6v233ii6g2ge5my4etat5urc7yfgtzz6au';
+        const tokenImage = 'https://' + robot_image_uri + '.ipfs.nftstorage.link/';
+
+        await addToken(tokenImage);
     });
 
     async function addToken(tokenImage) {
