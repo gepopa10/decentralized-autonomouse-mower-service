@@ -327,8 +327,7 @@ const initialize = async () => {
 	}
 
 	async function notify(_txt) {
-		document.getElementById("resultSpace").innerHTML =
-			`<input disabled = "true" id="result" type="text" class="form-control" placeholder="Description" aria-label="URL" aria-describedby="basic-addon1" value="Your NFT was minted in transaction ${_txt}">`;
+		document.getElementById("resultSpace").innerHTML = "Your NFT was minted in transaction " + _txt
 	}
 }
 

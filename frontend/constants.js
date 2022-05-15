@@ -177,4 +177,4 @@ const abiAdapter = [{
 	}
 ]
 
-const nftContractAddress = "0xacD1B3753b36b0D10D75f85f381629429823490E"
+const nftContractAddress = "0x314219e39dad7eF00966c72Ee01d5e923A820A48"
