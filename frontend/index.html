@@ -1,67 +1,86 @@
+<!DOCTYPE html>
 <html>
 
-	<head>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.3.0/web3.min.js" integrity="sha512-ppuvbiAokEJLjOUQ24YmpP7tTaLRgzliuldPRZ01ul6MhRC+B8LzcVkXmUsDee7ne9chUfApa9/pWrIZ3rwTFQ==" crossorigin="anonymous"></script>
-		<script language="javascript" type="text/javascript" src="robot_contract.js"></script>
-		<script language="javascript" type="text/javascript" src="api_contract.js"></script>
-		<script language="javascript" type="text/javascript" src="nft_minter_contract.js"></script>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.3.0/web3.min.js" integrity="sha512-ppuvbiAokEJLjOUQ24YmpP7tTaLRgzliuldPRZ01ul6MhRC+B8LzcVkXmUsDee7ne9chUfApa9/pWrIZ3rwTFQ==" crossorigin="anonymous"></script>
+    <script language="javascript" type="text/javascript" src="robot_contract.js"></script>
+    <script language="javascript" type="text/javascript" src="api_contract.js"></script>
+    <script language="javascript" type="text/javascript" src="nft_minter_contract.js"></script>
 
-		<!--ROS source-->
-		<script src="https://static.robotwebtools.org/threejs/current/three.min.js"></script>
-		<script src="https://static.robotwebtools.org/threejs/current/ColladaLoader.min.js"></script>
-		<script src="https://static.robotwebtools.org/ColladaAnimationCompress/current/ColladaLoader2.min.js"></script>
-		<script src="https://static.robotwebtools.org/threejs/current/STLLoader.min.js"></script>
-		<script src="https://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
-		<script src="https://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
-		<script src="https://static.robotwebtools.org/ros3djs/current/ros3d.min.js"></script>
+    <!--ROS source-->
+    <script src="https://static.robotwebtools.org/threejs/current/three.min.js"></script>
+    <script src="https://static.robotwebtools.org/threejs/current/ColladaLoader.min.js"></script>
+    <script src="https://static.robotwebtools.org/ColladaAnimationCompress/current/ColladaLoader2.min.js"></script>
+    <script src="https://static.robotwebtools.org/threejs/current/STLLoader.min.js"></script>
+    <script src="https://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
+    <script src="https://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
+    <script src="https://static.robotwebtools.org/ros3djs/current/ros3d.min.js"></script>
 
-		<link rel="stylesheet" type="text/css" href="index.css">
-	</head>
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+    <title>ChainlinkRobot</title>
+    <link rel="stylesheet" type="text/css" href="index.css" />
+</head>
 
-	<body>
-		<title>Autonomous Lawn Mower</title>
-		<h1><b>The Autonomous Lawn Mower</b></h1>
-		<p style="width: 60%; margin: auto">A decentralized autonomous lawn mower powered by chainlink. <br>
-			Enter the extremities coordinates of your yard and let the autonomous robot do the work. </p>
-		<p>Account: <span id="getAccountsResult"><button id="connectWallet">Connect Wallet</button></span></p>
-		<p></p>
-		<p></p>
-		<p></p>
+<body>
+    <header class="frame frame--header">
+        <div class="frame__title-wrap">
+            <h1 class="frame__title">Autonomous Decentralized Lawn Mower</h1>
+            <p class="frame__tagline">A autonomous robotic lawn mower service powered by Chainlink.</p>
+        </div>
 
-		<p></p>
-		<button id="ConnectRobot">Connect to robot</button>
-		<p></p>
-		<button id="StartMission">Start mission</button>
-		<p><span id="loadingBar"></span></p>
-		<p></p>
-		<p></p>
-		<p></p>
+        <nav class="frame__links">
+            <li class="frame__links">
+                <p>Account: <span id="getAccountsResult"><button class="button" id="connectWallet">Connect Wallet</button></span></p>
+            </li>
+        </nav>
+    </header>
 
-		<div id="urdf"></div>
+    <div class="frame__links">
+        <li class="content__item">
+        <li class="button button--pandora" id="urdf"></li>
+        </li>
+        <li class="content__item">
+            <button class="button button--pandora" id="ConnectRobot"><span>Connect</span></button>
+        </li>
+        <li class="content__item">
+            <button class="button button--pandora" id="StartMission"><span>Launch</span></button>
+        </li>
+        <li class="content__item">
+            <button class="button button--pandora" id="Snapshot"><span>Snapshot</span></button>
+        </li>
+    </div>
 
-		<p></p>
-		<button id="Snapshot">Snapshot</button>
-		<p></p>
+    <p></p>
+    <p></p>
+    <section class="results">
+        <p><span id="loadingBar"></span></p>
+    </section>
 
-		<div class="input-group mb-3" id="resultSpace"></div>
+    <section class="results">
+        <div class="input-group mb-3" id="resultSpace"></div>
+    </section>
 
-		<div id="nfts" class="flex gap-7 flex-wrap"></div>
+    <section class="nft">
+        <div id="nfts" class="flex gap-7 flex-wrap"></div>
+    </section>
 
-		<template id="nft_template">
-			<section>
-				<h1 class="font-bold bg-yellow-500 text-white text-center rounded-t-md"></h1>
+    <template id="nft_template">
+        <section>
+            <h1 class="font-bold bg-yellow-500 text-white text-center rounded-t-md"></h1>
 
-				<a href="" target="_blank">
-					<img class="rounded-b-md w-10 h-10" src="" alt="" width="200" height="200" style="float:left">
-				</a>
-			</section>
-		</template>
+            <a href="" target="_blank">
+                <img class="rounded-b-md w-10 h-10" src="" alt="" width="200" height="200" style="float:left">
+            </a>
+        </section>
+    </template>
 
-		<p id="error" style="color:#FF0000; display:none">
-			Error in the backend!
-		</p>
+    <p id="error" style="color:#FF0000; display:none">
+        Error in the backend!
+    </p>
 
-		<script type="text/javascript" src='index.js'></script>
-	</body>
+
+    <script type="text/javascript" src='index.js'></script>
+</body>
 
 </html>

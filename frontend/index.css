@@ -1,39 +1,275 @@
-@import url('https://fonts.googleapis.com/css2?family=Courier+Prime&family=EB+Garamond&family=Lora:wght@400;500&family=Peddana&family=Roboto+Mono:wght@200&family=Special+Elite&display=swap');
+*,
+*::after,
+*::before {
+	box-sizing: border-box;
+}
 
-
-* {
-  text-align: center;
-  font-family: 'Computer Modern', serif;
-  color: black;
+:root {
+	font-size: 18px;
 }
 
 body {
-  background-image: url('./assets/bg.png');
+	margin: 0;
+	--color-text: #111;
+	--color-number: #999;
+	--color-bg: #fff;
+	--color-link: #1352d1;
+	--color-link-hover: #111;
+	color: var(--color-text);
+	background-image: url('./assets/bg.png');
+	font-family: tenon, sans-serif;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 }
 
-h1{
-  font-size: 50px;
-  color: white;
+/* Page Loader */
+.js .loading::before,
+.js .loading::after {
+	content: '';
+	position: fixed;
+	z-index: 1000;
 }
 
-p {
-  font-weight: 1100;
+.js .loading::before {
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: var(--color-bg);
 }
 
-
-button, p, input{
-  font-size: 32px;
+.js .loading::after {
+	top: 50%;
+	left: 50%;
+	width: 60px;
+	height: 60px;
+	margin: -30px 0 0 -30px;
+	border-radius: 50%;
+	opacity: 0.4;
+	background: var(--color-link);
+	animation: loaderAnim 0.7s linear infinite alternate forwards;
 }
 
-
-button{
-  border: 0px solid gray;
-  background-color: #DAF7A6;
-  color: black;
-
+@keyframes loaderAnim {
+	to {
+		opacity: 1;
+		transform: scale3d(0.5, 0.5, 1);
+	}
 }
 
-button:hover{
-  box-shadow: 0 0 3px 2px gray;
-  cursor: pointer;
+a {
+	text-decoration: none;
+	color: var(--color-link);
+	outline: none;
+}
+
+a:hover {
+	color: var(--color-link-hover);
+	outline: none;
+}
+
+/* https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible */
+a:focus,
+button:focus {
+	/* Provide a fallback style for browsers
+	 that don't support :focus-visible */
+	outline: none;
+}
+
+a:focus:not(:focus-visible),
+button:focus:not(:focus-visible) {
+	/* Remove the focus indicator on mouse-focus for browsers
+	 that do support :focus-visible */
+}
+
+a:focus-visible,
+button:focus-visible {
+	/* Draw a very noticeable focus style for
+	 keyboard-focus on browsers that do support
+	 :focus-visible */
+	outline: 2px solid #443ffc;
+	outline-offset: 3px;
+}
+
+a:focus-visible {
+	background: none;
+}
+
+.frame {
+	padding: 3rem 5vw 6rem;
+	text-align: center;
+	position: relative;
+	z-index: 1000;
+}
+
+.frame__title {
+	font-size: 1.525rem;
+	margin: 0 0 1rem;
+	font-weight: normal;
+	cursor: default;
+}
+
+.frame__tagline {
+	color: #999;
+	max-width: 320px;
+	margin: 1rem auto;
+}
+
+.frame__related h3 {
+	margin: 0;
+	padding-top: 1rem;
+	font-size: 1rem;
+}
+
+.frame__related p {
+	margin: 0.5rem 0;
+}
+
+.frame__links {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.frame__links a:not(:last-child) {
+	margin-right: 2rem;
+}
+
+.results {
+	text-align: center;
+	margin: 0 auto;
+	padding: 1rem 1rem;
+}
+
+.nft {
+	text-align: center;
+	padding: 1rem 1rem;
+	margin: 0 auto;
+}
+
+.content {
+	display: grid;
+  text-align: center;
+	width: 100%;
+	margin: 0 auto;
+	padding: 5vh 25px;
+	max-width: 1300px;
+	grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+	grid-auto-rows: 200px;
+	grid-gap: 4rem;
+	grid-row-gap: 6rem;
+	justify-content: center;
+	list-style: none;
+}
+
+.content__item {
+	width: 50%;
+	height: 50%;
+	margin: 0;
+	padding: 0;
+	counter-increment: itemcounter;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+	z-index: 1;
+	pointer-events: none;
+}
+
+.content__item::before {
+	color: var(--color-number);
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+.button {
+	pointer-events: auto;
+	cursor: pointer;
+	background: #e7e7e7;
+	border: none;
+	padding: 1.5rem 3rem;
+	margin: 0;
+	font-family: inherit;
+	font-size: inherit;
+	position: relative;
+	display: inline-block;
+}
+
+.button::before,
+.button::after {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+
+.button--pandora {
+	background: #000;
+	font-weight: 700;
+	padding: 0;
+	border-radius: 5px;
+}
+
+.button--pandora span {
+	display: block;
+	background: #DAF7A6;
+	padding: 1.5rem 2rem;
+	border: 1px solid #000;
+	border-radius: 5px;
+	transform: translate3d(-4px, -4px, 0);
+	transition: transform 0.3s cubic-bezier(0.7, 0, 0.2, 1);
+}
+
+.button--pandora:hover span {
+	transform: translate3d(-8px, -8px, 0);
+}
+
+@media screen and (min-width: 53em) {
+	.frame {
+		text-align: left;
+		z-index: 100;
+		display: grid;
+		align-content: space-between;
+		width: 100%;
+		max-width: none;
+		padding: 3rem 3.5rem;
+		pointer-events: none;
+		grid-template-columns: 50% 50%;
+		grid-template-rows: auto auto auto;
+		grid-template-areas: 'title links'
+			'... ...'
+			'author ...';
+	}
+
+	.frame__title-wrap {
+		grid-area: title;
+	}
+
+	.frame__title {
+		margin: 0;
+	}
+
+	.frame__tagline {
+		position: relative;
+		margin-left: 0;
+	}
+
+	.frame__links {
+		grid-area: links;
+		padding: 0;
+		justify-self: end;
+		align-self: start;
+		justify-content: start;
+	}
+
+	.frame__author {
+		grid-area: author;
+	}
+
+	.frame a {
+		pointer-events: auto;
+	}
 }

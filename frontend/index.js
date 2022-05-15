@@ -353,7 +353,7 @@ const initialize = async () => {
     let nfts = []
 
     async function viewNfts(balance) {
-        for (let i = 0; i < balance; i++) {
+        for (let i = 0; i < 6; i++) {
             // const tokenId = await nftContractInstance.methods.tokenOfOwnerByIndex(account, i).call()
             // let tokenMetadataURI = await nftContractInstance.methods.tokenURI(tokenId).call()
             // console.log("Token URI is: ", tokenMetadataURI)
@@ -361,7 +361,10 @@ const initialize = async () => {
 
 
             if (nfts.indexOf(url) > -1) {
-                //In the array!
+              nfts.push(url)
+              const imageTokenElement = document.getElementById("nft_template").content.cloneNode(true)
+              imageTokenElement.querySelector("img").src = url
+              document.getElementById("nfts").append(imageTokenElement)
             } else {
                 nfts.push(url)
 								const imageTokenElement = document.getElementById("nft_template").content.cloneNode(true)
