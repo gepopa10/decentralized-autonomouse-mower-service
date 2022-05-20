@@ -1,19 +1,19 @@
 #!/usr/bin/env python
 import os
 import time
-# import rospy
-# from threading import Thread
+import rospy
+from threading import Thread
 from flask import Flask, jsonify
 from nav_msgs.msg import Odometry
 from std_srvs.srv import Empty
 from rospy_message_converter import json_message_converter
 from ifps_image_poster import IFPS_image_poster
 
-# odom = Odometry()
+odom = Odometry()
 
-# def update_odom(data):
-#     global odom
-#     odom = data
+def update_odom(data):
+    global odom
+    odom = data
 
 
 # ROS node, publisher, and parameter.
