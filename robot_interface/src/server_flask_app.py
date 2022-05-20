@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import os
-import time
 import rospy
 from threading import Thread
 from flask import Flask, jsonify
@@ -9,18 +8,18 @@ from std_srvs.srv import Empty
 from rospy_message_converter import json_message_converter
 from ifps_image_poster import IFPS_image_poster
 
-# odom = Odometry()
+odom = Odometry()
 
-# def update_odom(data):
-#     global odom
-#     odom = data
+def update_odom(data):
+    global odom
+    odom = data
 
 
 # ROS node, publisher, and parameter.
 # The node is started in a separate thread to avoid conflicts with Flask.
 # The parameter *disable_signals* must be set if node is not initialized
 # in the main thread.
-# Thread(target=lambda: rospy.init_node('robot_interface_server', disable_signals=True)).start()
+Thread(target=lambda: rospy.init_node('robot_interface_server', disable_signals=True)).start()
 
 # A subscriber to Odometry which is called when a message is received
 odom_subscriber = rospy.Subscriber("/odom", Odometry, update_odom)
@@ -70,6 +69,6 @@ if __name__ == '__main__':
         # See https://github.com/coleifer/micawber/issues/59 where it ways that ran with debug there is a socket issue
 
         # If we press control + C, the node will stop.
-    #     rospy.spin()
-    # except rospy.ROSInterruptException:
-    #     pass
+        rospy.spin()
+    except rospy.ROSInterruptException:
+        pass
