@@ -1,4 +1,4 @@
-from brownie import decentralized_lawn_mower, APIConsumer, Oracle, Operator, RobotUrlAPIConsumer, robot_camera_ipfs_nft
+from brownie import decentralized_lawn_mower, Operator, RobotUrlAPIConsumer, robot_camera_ipfs_nft
 from scripts.get_account import get_account
 import time
 
@@ -14,15 +14,6 @@ def start_mission():
         {"from": account, "value": fee})
     tx.wait(1)
     print(tx.events["mission_started"]["time"])
-
-
-def request_robot_url():
-    account = get_account()
-    api_consumer_contract = APIConsumer[-1]
-    tx = api_consumer_contract.requestRobotUrl(
-        {"from": account, "gas_limit": 2074044, 'allow_revert': True})
-    tx.wait(1)
-    print(api_consumer_contract.robot_url())
 
 def request_robot_url_bytes():
     operator_contract = Operator[-1]
@@ -56,15 +47,6 @@ def request_robot_image_uri_bytes():
     print("my_uri")
     print(api_consumer_contract.robot_image_uri())
 
-def set_node_fullfilment_permission():
-    account = get_account()
-    
-    oracle_contract = Oracle[-1]
-    tx = oracle_contract.setFulfillmentPermission(
-        node_address, True, {"from": account})
-    tx.wait(1)
-
-
 def set_operator_fullfilment_permission():
     account = get_account()
 
@@ -90,9 +72,7 @@ def mint_token():
 
 def main():
     # start_mission()
-    # set_node_fullfilment_permission()
     # set_operator_fullfilment_permission()
-    # request_robot_url()
     # request_robot_url_bytes()
     # mint_token()
     request_robot_image_uri_bytes()
