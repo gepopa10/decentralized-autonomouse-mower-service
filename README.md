@@ -2,20 +2,35 @@
 
 ![Simulation Rviz](images/rviz.png?raw=true "Title")
 
-To launch development environnment with rviz:
-```
-roslaunch turtlebot3_fake turtlebot3_path_dev_rviz.launch
-```
-To launch development environnment with gazebo:
-```
-roslaunch turtlebot3_gazebo turtlebot3_world_grass_dev_gazebo.launch
-```
-To launch development environnment with gazebo and rviz:
-```
-roslaunch turtlebot3_gazebo turtlebot3_world_grass_dev.launch
-```
+A decentralized autonomous lawn mowing service powered by chainlink with additional live snapshot and mint capabilities.
 
-Call it with the input file with the nb of waypoints that has to be smaller than the total nb of points within the `fullpath_meters.txt`:
-```
-rosservice call publish_raw_path_from_fullpath_meters "fullpath_meters.txt" 4000
-```
+## Prerequisites
+Developed and tested in an Ubuntu 18.04 environment.
+To be able to run the demo:
+- Install [ros-melodic](http://wiki.ros.org/melodic/Installation/Ubuntu) package on your machine.
+- Install [Diode Network client](https://diode.io/products/diode-network/) which will expose the website, robot and robot api port over a decentralized network. You can configure a custom dns domain for free so the website url is more human readable. For example, during the video demo, the dns was chainlink-robot.diode.link. For more details check this [how-to](https://support.diode.io/article/ss32engxlq-publish-your-local-webserver).
+
+## Run instructions
+- Launch the bash script `./run.sh` at the root of this repo. This will do a few things:
+    - Start diode and publish the http port (default = 4443) for the website and the flask server port (default = 3001).
+    - Run an http server to have access to the website (over port 4443).
+    - Launch Gazebo for the robot simulation.
+    - Launch RVIZ to visualize data.
+    - Launch the flask server of the robot to query the internal services of the robot from the outside world.
+    - Launch the robot controller (a ROS node).
+    - Launch the path planner (a ROS node).
+
+- Run the external adapter smart contract on a chainlink node. Other contracts are already on the Kovan testnet.
+
+## Usage
+Users can interact with the mowing service and the robot via its public website. The website url depends on the dns domain you choose when launching the diode network client locally. For the demo, the website was https://chainlink-robot.diode.link.
+
+### WebApp
+
+![WebApp](images/thumbnail.png?raw=true "Title")
+
+1. Connect your wallet on the top-right.
+2. Connect to the robot. This will use an external adapter to query the robot url to connect to using the rest-api on the robot.
+3. Start a mission, you will have to pay ETH for this.
+4. Take snapshots along the way which will be minted into your wallet.
+5. View all your snapshots at any time.
