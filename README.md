@@ -21,6 +21,8 @@ To be able to run the demo:
     - Launch the path planner (a ROS node).
 
 - Run the external adapter smart contract on a chainlink node. Other contracts are already on the Kovan testnet.
+    - Run a [local chainlink node](https://www.youtube.com/watch?v=DO3O6ZUtwbs&ab_channel=Chainlink)
+    - Launch the `brownie/get_robot_request_job_big_word.toml` job on your local node
 
 ## Usage
 Users can interact with the mowing service and the robot via its public website. The website url depends on the dns domain you choose when launching the diode network client locally. For the demo, the website was https://chainlink-robot.diode.link.
