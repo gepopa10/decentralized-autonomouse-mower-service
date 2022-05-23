@@ -20,7 +20,7 @@ To be able to run the demo:
     - Launch the robot controller (a ROS node).
     - Launch the path planner (a ROS node).
 
-- Run the external adapter smart contract on a chainlink node. Other contracts are already on the Kovan testnet.
+- Run the chainlink job that supports calls on the smart contract external adapter.
     - Run a [local chainlink node](https://www.youtube.com/watch?v=DO3O6ZUtwbs&ab_channel=Chainlink)
     - Launch the `brownie/get_robot_request_job_big_word.toml` job on your local node
 
