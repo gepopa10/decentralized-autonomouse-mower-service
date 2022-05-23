@@ -27,7 +27,7 @@ Users can interact with the mowing service and the robot via its public website.
 
 ### WebApp
 
-![WebApp](images/thumbnail.png?raw=true "Title")
+![WebApp](images/webapp.png?raw=true "Title")
 
 1. Connect your wallet on the top-right.
 2. Connect to the robot. This will use an external adapter to query the robot url to connect to using the rest-api on the robot.
